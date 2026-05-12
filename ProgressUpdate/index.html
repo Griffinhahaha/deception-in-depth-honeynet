@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Progress Update 1</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&family=Source+Sans+3:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --ink: #13211f;
+      --muted: #66746f;
+      --paper: #fbf7ec;
+      --panel: rgba(255, 252, 242, 0.86);
+      --cedar: #8f4f2f;
+      --moss: #526b5a;
+      --fern: #dfe9dc;
+      --blue: #cddfe8;
+      --line: rgba(19, 33, 31, 0.13);
+    }
+
+    * {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Source Sans 3", sans-serif;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(143, 79, 47, 0.18), transparent 26rem),
+        radial-gradient(circle at 84% 18%, rgba(82, 107, 90, 0.18), transparent 32rem),
+        linear-gradient(135deg, #fbf7ec 0%, #f3eadc 52%, #eaf2ee 100%);
+    }
+
+    .display {
+      font-family: "Fraunces", serif;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 290px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 30px 22px;
+      overflow-y: auto;
+      border-right: 1px solid var(--line);
+      background: rgba(251, 247, 236, 0.82);
+      backdrop-filter: blur(18px);
+      z-index: 20;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 12px;
+      border-radius: 16px;
+      color: var(--muted);
+      font-weight: 800;
+      text-decoration: none;
+      transition: 0.2s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--ink);
+      background: rgba(82, 107, 90, 0.14);
+      transform: translateX(3px);
+    }
+
+    .mobile-top {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(251, 247, 236, 0.92);
+      backdrop-filter: blur(18px);
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      inset: 62px 14px auto 14px;
+      z-index: 50;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(251, 247, 236, 0.98);
+      box-shadow: 0 24px 70px rgba(19, 33, 31, 0.22);
+    }
+
+    .mobile-menu.open {
+      display: block;
+    }
+
+    .section {
+      padding: 76px 34px;
+    }
+
+    .section-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .glass {
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      background: var(--panel);
+      box-shadow: 0 24px 70px rgba(19, 33, 31, 0.12);
+      backdrop-filter: blur(18px);
+    }
+
+    .soft-card {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.64);
+      box-shadow: 0 18px 42px rgba(19, 33, 31, 0.08);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(82, 107, 90, 0.13);
+      color: var(--moss);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .hero-visual {
+      min-height: 390px;
+      background:
+        linear-gradient(135deg, rgba(19, 33, 31, 0.9), rgba(82, 107, 90, 0.74)),
+        url("assets/image1.webp") center / cover;
+    }
+
+    .hero-chip {
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.13);
+      backdrop-filter: blur(14px);
+    }
+
+    .split-title {
+      display: grid;
+      gap: 24px;
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      align-items: end;
+    }
+
+    .review-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .review-card::after {
+      content: "";
+      position: absolute;
+      right: -42px;
+      bottom: -42px;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: rgba(143, 79, 47, 0.12);
+    }
+
+    .architecture-tab {
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.5);
+      transition: 0.2s ease;
+    }
+
+    .architecture-tab.active,
+    .architecture-tab:hover {
+      color: #fffaf0;
+      border-color: var(--moss);
+      background: var(--moss);
+      box-shadow: 0 14px 26px rgba(82, 107, 90, 0.18);
+    }
+
+    .architecture-panel {
+      display: none;
+    }
+
+    .architecture-panel.active {
+      display: block;
+      animation: fadeUp 0.22s ease both;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .mermaid-box {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.72);
+      padding: 24px;
+    }
+
+    .accordion {
+      border-left: 5px solid var(--cedar);
+    }
+
+    .accordion-detail {
+      display: none;
+    }
+
+    .accordion.open .accordion-detail {
+      display: block;
+    }
+
+    .evidence-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.66);
+    }
+
+    .evidence-table th,
+    .evidence-table td {
+      padding: 18px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .evidence-table th {
+      color: var(--ink);
+      background: rgba(82, 107, 90, 0.12);
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .evidence-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .question-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 210px;
+    }
+
+    .question-card::before {
+      content: attr(data-number);
+      position: absolute;
+      right: 18px;
+      top: 8px;
+      color: rgba(82, 107, 90, 0.12);
+      font-family: "Fraunces", serif;
+      font-size: 92px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .requirement-step {
+      position: relative;
+      padding-left: 54px;
+    }
+
+    .requirement-step::before {
+      content: "";
+      position: absolute;
+      left: 18px;
+      top: 42px;
+      bottom: -22px;
+      width: 2px;
+      background: rgba(82, 107, 90, 0.18);
+    }
+
+    .requirement-step:last-child::before {
+      display: none;
+    }
+
+    .requirement-dot {
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 16px;
+      color: #fffaf0;
+      background: var(--moss);
+      font-weight: 900;
+      box-shadow: 0 12px 24px rgba(82, 107, 90, 0.18);
+    }
+
+    .metric-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(143, 79, 47, 0.12);
+      color: var(--cedar);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    @media (max-width: 1024px) {
+      .layout {
+        display: block;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .mobile-top {
+        display: flex;
+      }
+
+      .section {
+        padding: 58px 18px;
+      }
+
+      .split-title {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="mobile-top">
+    <div>
+      <p class="text-xs font-black uppercase tracking-[0.22em] text-[#526b5a]">Capstone</p>
+      <p class="display text-xl">Progress Update 1</p>
+    </div>
+    <button id="menuToggle" class="rounded-2xl bg-[#13211f] px-4 py-3 text-white" aria-label="Open navigation">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </div>
+
+  <div id="mobileMenu" class="mobile-menu">
+    <a class="nav-link" href="#overview"><i class="fa-solid fa-seedling"></i> Overview</a>
+    <a class="nav-link" href="#questions"><i class="fa-solid fa-circle-question"></i> Research Questions</a>
+    <a class="nav-link" href="#literature"><i class="fa-solid fa-book-open"></i> Literature Review</a>
+    <a class="nav-link" href="#synthesis"><i class="fa-solid fa-diagram-project"></i> Key Synthesis</a>
+    <a class="nav-link" href="#requirements"><i class="fa-solid fa-list-check"></i> Design Requirements</a>
+    <a class="nav-link" href="#architecture"><i class="fa-solid fa-layer-group"></i> Architecture Design</a>
+    <a class="nav-link" href="#telemetry"><i class="fa-solid fa-chart-network"></i> Telemetry</a>
+    <a class="nav-link" href="#experiment"><i class="fa-solid fa-flask"></i> Experiment Scope</a>
+    <a class="nav-link" href="#contribution"><i class="fa-solid fa-bullseye"></i> Contribution</a>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="mb-8">
+        <div class="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#13211f] text-white shadow-lg">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <p class="text-xs font-black uppercase tracking-[0.24em] text-[#526b5a]">Capstone Project</p>
+        <h1 class="display mt-2 text-4xl leading-none">Progress Update 1</h1>
+        <p class="mt-4 text-sm leading-6 text-slate-600">Literature review and architecture design for a Deception-in-Depth honeynet.</p>
+      </div>
+
+      <nav class="space-y-1">
+        <a class="nav-link active" href="#overview"><i class="fa-solid fa-seedling"></i> Overview</a>
+        <a class="nav-link" href="#questions"><i class="fa-solid fa-circle-question"></i> Research Questions</a>
+        <a class="nav-link" href="#literature"><i class="fa-solid fa-book-open"></i> Literature Review</a>
+        <a class="nav-link" href="#synthesis"><i class="fa-solid fa-diagram-project"></i> Key Synthesis</a>
+        <a class="nav-link" href="#requirements"><i class="fa-solid fa-list-check"></i> Design Requirements</a>
+        <a class="nav-link" href="#architecture"><i class="fa-solid fa-layer-group"></i> Architecture Design</a>
+        <a class="nav-link" href="#telemetry"><i class="fa-solid fa-chart-network"></i> Telemetry</a>
+        <a class="nav-link" href="#experiment"><i class="fa-solid fa-flask"></i> Experiment Scope</a>
+        <a class="nav-link" href="#contribution"><i class="fa-solid fa-bullseye"></i> Contribution</a>
+      </nav>
+
+      <div class="mt-8 rounded-3xl bg-white/58 p-5">
+        <p class="text-sm font-black text-[#13211f]">Update Focus</p>
+        <div class="mt-4 space-y-3 text-sm leading-6 text-slate-600">
+          <p><strong>1.</strong> Literature review: why single-layer honeypots are insufficient.</p>
+          <p><strong>2.</strong> Architecture design: how layered deception supports observation.</p>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+      <section id="overview" class="section pt-10 lg:pt-12">
+        <div class="section-inner">
+          <div class="glass overflow-hidden rounded-[36px]">
+            <div class="grid lg:grid-cols-[1.05fr_0.95fr]">
+              <div class="p-8 lg:p-12">
+                <span class="tag"><i class="fa-solid fa-circle-nodes"></i> Deception-in-Depth Honeynet</span>
+                <h2 class="display mt-7 max-w-3xl text-5xl leading-[0.96] lg:text-7xl">Progress Update 1</h2>
+                <p class="mt-6 max-w-2xl text-xl leading-9 text-slate-650">
+                  This update presents the conceptual foundation and system design for a layered honeynet architecture that can observe attacker behaviour beyond initial compromise.
+                </p>
+                <div class="mt-8 grid gap-4 md:grid-cols-2">
+                  <div class="soft-card rounded-3xl p-5">
+                    <i class="fa-solid fa-book-open text-2xl text-[#8f4f2f]"></i>
+                    <h3 class="mt-4 text-xl font-black">Literature Review</h3>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">Synthesizes honeypot limitations, cyber deception principles, layered architectures, MITRE ATT&CK alignment, and evaluation gaps.</p>
+                  </div>
+                  <div class="soft-card rounded-3xl p-5">
+                    <i class="fa-solid fa-drafting-compass text-2xl text-[#526b5a]"></i>
+                    <h3 class="mt-4 text-xl font-black">Architecture Design</h3>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">Defines a network, host/AD, and data/cloud deception model with staged activation and cross-layer telemetry.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="hero-visual relative">
+                <div class="absolute inset-0 bg-gradient-to-br from-[#13211f]/30 via-transparent to-[#8f4f2f]/35"></div>
+                <div class="absolute bottom-6 left-6 right-6 grid gap-3 sm:grid-cols-3">
+                  <div class="hero-chip rounded-3xl p-4 text-white">
+                    <p class="text-xs font-black uppercase tracking-[0.16em] text-white/60">Metric</p>
+                    <p class="mt-2 font-black">Misdirection</p>
+                  </div>
+                  <div class="hero-chip rounded-3xl p-4 text-white">
+                    <p class="text-xs font-black uppercase tracking-[0.16em] text-white/60">Metric</p>
+                    <p class="mt-2 font-black">Delay</p>
+                  </div>
+                  <div class="hero-chip rounded-3xl p-4 text-white">
+                    <p class="text-xs font-black uppercase tracking-[0.16em] text-white/60">Metric</p>
+                    <p class="mt-2 font-black">Engagement</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="questions" class="section">
+        <div class="section-inner">
+          <div class="split-title mb-9">
+            <div>
+              <p class="text-sm font-black uppercase tracking-[0.24em] text-[#8f4f2f]">Research Framing</p>
+              <h2 class="display mt-3 text-4xl leading-tight lg:text-6xl">Questions Guiding the Project</h2>
+            </div>
+            <p class="text-lg leading-8 text-slate-600">
+              The first update turns the project from a broad cyber deception idea into a focused research problem: how can a layered honeynet make attacker decision-making observable?
+            </p>
+          </div>
+
+          <div class="grid gap-5 lg:grid-cols-3">
+            <article class="question-card soft-card rounded-3xl p-6" data-number="01">
+              <span class="tag"><i class="fa-solid fa-route"></i> Navigation</span>
+              <h3 class="relative mt-5 text-2xl font-black">How does layered deception influence attacker navigation?</h3>
+              <p class="relative mt-3 leading-7 text-slate-600">This question focuses on whether attackers follow the paths created by deceptive services, credentials, hosts, files, and cloud references.</p>
+            </article>
+            <article class="question-card soft-card rounded-3xl p-6" data-number="02">
+              <span class="tag"><i class="fa-solid fa-hand-pointer"></i> Decisions</span>
+              <h3 class="relative mt-5 text-2xl font-black">Which deception artifacts affect attacker choices?</h3>
+              <p class="relative mt-3 leading-7 text-slate-600">The design treats credentials, honeyfiles, fake accounts, and cloud tokens as probes that reveal attacker priorities and assumptions.</p>
+            </article>
+            <article class="question-card soft-card rounded-3xl p-6" data-number="03">
+              <span class="tag"><i class="fa-solid fa-layer-group"></i> Depth</span>
+              <h3 class="relative mt-5 text-2xl font-black">Can staged layers increase meaningful engagement?</h3>
+              <p class="relative mt-3 leading-7 text-slate-600">The project evaluates whether progressive exposure encourages attackers to move beyond initial access into host and data-oriented behaviour.</p>
+            </article>
+          </div>
+
+          <div class="mt-7 glass rounded-[34px] p-6 lg:p-8">
+            <div class="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
+              <div>
+                <span class="tag"><i class="fa-solid fa-lightbulb"></i> Working Hypothesis</span>
+                <h3 class="display mt-4 text-4xl leading-tight">Layered deception should reveal richer attacker behaviour than isolated honeypots.</h3>
+              </div>
+              <div class="grid gap-4 sm:grid-cols-3">
+                <div class="rounded-3xl bg-white/70 p-5">
+                  <h4 class="font-black">Path Influence</h4>
+                  <p class="mt-2 text-sm leading-6 text-slate-600">Attackers interact with decoy-induced paths that would not exist in a flat sensor.</p>
+                </div>
+                <div class="rounded-3xl bg-white/70 p-5">
+                  <h4 class="font-black">Decision Evidence</h4>
+                  <p class="mt-2 text-sm leading-6 text-slate-600">Artifact use shows what the attacker believed to be valuable or reachable.</p>
+                </div>
+                <div class="rounded-3xl bg-white/70 p-5">
+                  <h4 class="font-black">Lifecycle Coverage</h4>
+                  <p class="mt-2 text-sm leading-6 text-slate-600">Observation expands from initial contact to internal movement and data targeting.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="literature" class="section">
+        <div class="section-inner">
+          <div class="split-title mb-9">
+            <div>
+              <p class="text-sm font-black uppercase tracking-[0.24em] text-[#8f4f2f]">Literature Review</p>
+              <h2 class="display mt-3 text-4xl leading-tight lg:text-6xl">What the Literature Establishes</h2>
+            </div>
+            <p class="text-lg leading-8 text-slate-600">
+              The review frames the project as a response to a visibility problem: conventional honeypots are useful sensors, but they rarely sustain the environmental continuity needed to observe multi-stage attacker behaviour.
+            </p>
+          </div>
+
+          <div class="grid gap-5 lg:grid-cols-3">
+            <article class="review-card soft-card rounded-3xl p-6">
+              <span class="tag"><i class="fa-solid fa-eye-slash"></i> Problem</span>
+              <h3 class="mt-5 text-2xl font-black">Single-Layer Blindness</h3>
+              <p class="mt-3 leading-7 text-slate-600">Traditional low- and high-interaction honeypots are strong at capturing reconnaissance, brute-force attempts, and initial exploitation, but they are structurally weak at observing lateral movement, credential harvesting, collection, and exfiltration.</p>
+            </article>
+            <article class="review-card soft-card rounded-3xl p-6">
+              <span class="tag"><i class="fa-solid fa-route"></i> Need</span>
+              <h3 class="mt-5 text-2xl font-black">Environmental Continuity</h3>
+              <p class="mt-3 leading-7 text-slate-600">Multi-stage observation requires plausible continuation paths. Attackers need to encounter a believable progression from exposed services to internal hosts and then to higher-value data or cloud resources.</p>
+            </article>
+            <article class="review-card soft-card rounded-3xl p-6">
+              <span class="tag"><i class="fa-solid fa-brain"></i> Lens</span>
+              <h3 class="mt-5 text-2xl font-black">Behavioural Evaluation</h3>
+              <p class="mt-3 leading-7 text-slate-600">The literature motivates moving beyond detection-only metrics toward behavioural measures such as misdirection, delay, engagement depth, path expansion, and tactic-level observation.</p>
+            </article>
+          </div>
+
+          <div class="mt-7 grid gap-5 lg:grid-cols-2">
+            <div class="soft-card rounded-3xl p-6">
+              <h3 class="text-2xl font-black">Research Themes Reviewed</h3>
+              <div class="mt-5 grid gap-3 sm:grid-cols-2">
+                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Honeypot and honeynet taxonomy</div>
+                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Adaptive cyber deception</div>
+                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Military deception principles</div>
+                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Host and Active Directory deception</div>
+                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Honeytokens and decoy data</div>
+                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">MITRE ATT&CK / D3FEND mapping</div>
+              </div>
+            </div>
+
+            <div class="soft-card rounded-3xl p-6">
+              <h3 class="text-2xl font-black">Core Literature Gap</h3>
+              <p class="mt-4 text-lg leading-8 text-slate-600">
+                Existing work discusses deception techniques, adaptive honeynets, and defensive frameworks, but there is still limited controlled evaluation of how layered deception changes attacker navigation across network, host, and data/cloud stages.
+              </p>
+              <div class="mt-5 rounded-3xl bg-[#13211f] p-5 text-white">
+                <p class="text-sm font-black uppercase tracking-[0.18em] text-white/58">Project response</p>
+                <p class="mt-2 text-xl font-black leading-8">Design an integrated deception environment that makes attacker paths observable, comparable, and measurable.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-7 soft-card rounded-[30px] p-5 lg:p-7">
+            <div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p class="text-sm font-black uppercase tracking-[0.22em] text-[#8f4f2f]">Evidence Matrix</p>
+                <h3 class="display mt-2 text-3xl leading-tight lg:text-4xl">How the Reviewed Work Shapes the Design</h3>
+              </div>
+              <p class="max-w-md text-sm leading-6 text-slate-600">This matrix links literature themes to concrete design decisions so the page reads like a project rationale, not just a list of sources.</p>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="evidence-table">
+                <thead>
+                  <tr>
+                    <th>Literature Area</th>
+                    <th>Key Finding</th>
+                    <th>Design Implication</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="font-black">Traditional Honeypots</td>
+                    <td class="text-slate-600">They capture scanning, brute force, and initial exploitation well, but often stop before post-compromise behaviour becomes visible.</td>
+                    <td class="text-slate-600">The architecture needs more than an exposed service layer; it needs believable follow-on systems.</td>
+                  </tr>
+                  <tr>
+                    <td class="font-black">Adaptive Deception</td>
+                    <td class="text-slate-600">Deception is more convincing when the environment responds to observed attacker actions rather than exposing everything at once.</td>
+                    <td class="text-slate-600">Staged activation is used to reveal deeper assets only after meaningful attacker interaction.</td>
+                  </tr>
+                  <tr>
+                    <td class="font-black">Host / AD Deception</td>
+                    <td class="text-slate-600">Internal identity systems and credentials are central to modern lateral movement decisions.</td>
+                    <td class="text-slate-600">The host layer includes Active Directory, decoy accounts, credential placement, and enterprise-style hosts.</td>
+                  </tr>
+                  <tr>
+                    <td class="font-black">Honeytokens and Data Lures</td>
+                    <td class="text-slate-600">Tokens and decoy files work best when they are uniquely attributable and connected to plausible attacker goals.</td>
+                    <td class="text-slate-600">Cloud keys, honeyfiles, and decoy storage are tagged so their use can reconstruct attacker intent.</td>
+                  </tr>
+                  <tr>
+                    <td class="font-black">MITRE ATT&CK / D3FEND</td>
+                    <td class="text-slate-600">Standard frameworks provide a vocabulary for connecting observed actions to tactics and defensive deception techniques.</td>
+                    <td class="text-slate-600">Telemetry is mapped to tactics such as discovery, credential access, lateral movement, collection, and exfiltration.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="synthesis" class="section">
+        <div class="section-inner">
+          <div class="glass rounded-[34px] p-6 lg:p-9">
+            <div class="mb-8">
+              <p class="text-sm font-black uppercase tracking-[0.24em] text-[#8f4f2f]">Argumentative Synthesis</p>
+              <h2 class="display mt-3 text-4xl leading-tight lg:text-6xl">Design Logic Derived From the Review</h2>
+            </div>
+
+            <div class="grid gap-5 lg:grid-cols-2">
+              <div class="rounded-3xl bg-white/70 p-6">
+                <h3 class="flex items-center gap-3 text-2xl font-black"><i class="fa-solid fa-link text-[#8f4f2f]"></i> Continuity Before Complexity</h3>
+                <p class="mt-4 leading-7 text-slate-600">The architecture does not simply add more decoys. It links decoys into a plausible enterprise path so that each attacker action can reveal intent, capability, and decision-making.</p>
+              </div>
+              <div class="rounded-3xl bg-white/70 p-6">
+                <h3 class="flex items-center gap-3 text-2xl font-black"><i class="fa-solid fa-gauge-high text-[#526b5a]"></i> Metrics Must Match Deception Goals</h3>
+                <p class="mt-4 leading-7 text-slate-600">Detection rate alone cannot show whether deception changed behaviour. The project therefore emphasizes misdirection, delay, and engagement depth as behavioural outcomes.</p>
+              </div>
+              <div class="rounded-3xl bg-white/70 p-6">
+                <h3 class="flex items-center gap-3 text-2xl font-black"><i class="fa-solid fa-user-secret text-[#8f4f2f]"></i> Attacker Skepticism Matters</h3>
+                <p class="mt-4 leading-7 text-slate-600">Literature on attacker decision-making suggests that deception fidelity and perceived value shape whether attackers continue, disengage, or change tactics.</p>
+              </div>
+              <div class="rounded-3xl bg-white/70 p-6">
+                <h3 class="flex items-center gap-3 text-2xl font-black"><i class="fa-solid fa-tags text-[#526b5a]"></i> Artifacts Need Identity</h3>
+                <p class="mt-4 leading-7 text-slate-600">Decoy credentials, honeyfiles, services, and cloud tokens must be uniquely tagged so interactions can be reconstructed into cross-layer paths.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="requirements" class="section">
+        <div class="section-inner">
+          <div class="split-title mb-9">
+            <div>
+              <p class="text-sm font-black uppercase tracking-[0.24em] text-[#8f4f2f]">Design Requirements</p>
+              <h2 class="display mt-3 text-4xl leading-tight lg:text-6xl">What the Architecture Must Support</h2>
+            </div>
+            <p class="text-lg leading-8 text-slate-600">
+              The literature review produces practical requirements for the system. These requirements are used to evaluate whether the design can support meaningful attacker observation.
+            </p>
+          </div>
+
+          <div class="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
+            <div class="glass rounded-[34px] p-6 lg:p-8">
+              <div class="space-y-8">
+                <div class="requirement-step">
+                  <div class="requirement-dot">1</div>
+                  <h3 class="text-2xl font-black">Plausible Entry Points</h3>
+                  <p class="mt-2 leading-7 text-slate-600">The network-facing layer must look worth probing without appearing unrealistically vulnerable or empty. Service banners, exposed ports, and initial credentials should support believable reconnaissance.</p>
+                </div>
+                <div class="requirement-step">
+                  <div class="requirement-dot">2</div>
+                  <h3 class="text-2xl font-black">Internal Continuation Paths</h3>
+                  <p class="mt-2 leading-7 text-slate-600">The attacker must discover internal hosts, identities, shares, and credentials that make lateral movement plausible enough to continue the session.</p>
+                </div>
+                <div class="requirement-step">
+                  <div class="requirement-dot">3</div>
+                  <h3 class="text-2xl font-black">High-Value End Targets</h3>
+                  <p class="mt-2 leading-7 text-slate-600">The data/cloud layer must provide realistic objectives such as fake storage, API keys, documents, and cloud references that reveal collection and exfiltration intent.</p>
+                </div>
+                <div class="requirement-step">
+                  <div class="requirement-dot">4</div>
+                  <h3 class="text-2xl font-black">Cross-Layer Observability</h3>
+                  <p class="mt-2 leading-7 text-slate-600">Logs cannot remain isolated per service. The system must preserve identities, timestamps, and artifact IDs so attacker sessions can be reconstructed across layers.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-5">
+              <div class="soft-card rounded-3xl p-6">
+                <span class="tag"><i class="fa-solid fa-check-double"></i> Design Principle</span>
+                <h3 class="mt-4 text-2xl font-black">Progressive Revelation</h3>
+                <p class="mt-3 leading-7 text-slate-600">The system should not reveal every asset at once. Instead, each layer should become more visible as the attacker demonstrates interest, capability, or commitment.</p>
+              </div>
+              <div class="soft-card rounded-3xl p-6">
+                <span class="tag"><i class="fa-solid fa-scale-balanced"></i> Design Tradeoff</span>
+                <h3 class="mt-4 text-2xl font-black">Fidelity vs. Safety</h3>
+                <p class="mt-3 leading-7 text-slate-600">The architecture must be realistic enough to sustain interaction while staying isolated, controlled, resettable, and free of genuine sensitive data.</p>
+              </div>
+              <div class="soft-card rounded-3xl p-6">
+                <span class="tag"><i class="fa-solid fa-magnifying-glass-chart"></i> Analysis Need</span>
+                <h3 class="mt-4 text-2xl font-black">Behaviour Before Alerts</h3>
+                <p class="mt-3 leading-7 text-slate-600">The goal is not only to detect an intrusion. The goal is to observe what attackers do next, what they value, and how deception changes their path.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="architecture" class="section">
+        <div class="section-inner">
+          <div class="split-title mb-9">
+            <div>
+              <p class="text-sm font-black uppercase tracking-[0.24em] text-[#8f4f2f]">Architecture Design</p>
+              <h2 class="display mt-3 text-4xl leading-tight lg:text-6xl">Layered Honeynet Model</h2>
+            </div>
+            <p class="text-lg leading-8 text-slate-600">
+              The proposed system is organized into three deception layers. Each layer corresponds to a different stage of attacker activity and produces telemetry for behavioural reconstruction.
+            </p>
+          </div>
+
+          <div class="glass rounded-[34px] p-5 lg:p-8">
+            <div class="mb-6 flex flex-wrap gap-3">
+              <button class="architecture-tab active rounded-2xl px-5 py-3 text-sm font-black" data-layer="network">Network Layer</button>
+              <button class="architecture-tab rounded-2xl px-5 py-3 text-sm font-black" data-layer="host">Host / AD Layer</button>
+              <button class="architecture-tab rounded-2xl px-5 py-3 text-sm font-black" data-layer="data">Data / Cloud Layer</button>
+            </div>
+
+            <div class="architecture-panel active" data-panel="network">
+              <div class="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+                <div class="rounded-3xl bg-[#13211f] p-7 text-white">
+                  <p class="text-xs font-black uppercase tracking-[0.22em] text-white/56">Reconnaissance and Initial Access</p>
+                  <h3 class="display mt-3 text-4xl">Network Deception</h3>
+                  <p class="mt-4 leading-7 text-white/74">Attacker-facing services create the first believable contact point and capture scanning, probing, banner interpretation, exploit selection, and credential attempts.</p>
+                </div>
+                <div class="grid gap-4 md:grid-cols-3">
+                  <div class="rounded-3xl bg-white/70 p-5">
+                    <i class="fa-solid fa-network-wired text-2xl text-[#8f4f2f]"></i>
+                    <h4 class="mt-4 font-black">Components</h4>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">T-Pot CE, SSH/HTTP/SMB exposure, crafted banners, simulated subnets.</p>
+                  </div>
+                  <div class="rounded-3xl bg-white/70 p-5">
+                    <i class="fa-solid fa-crosshairs text-2xl text-[#8f4f2f]"></i>
+                    <h4 class="mt-4 font-black">ATT&CK Mapping</h4>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">Reconnaissance, initial access, discovery, credential access.</p>
+                  </div>
+                  <div class="rounded-3xl bg-white/70 p-5">
+                    <i class="fa-solid fa-file-lines text-2xl text-[#8f4f2f]"></i>
+                    <h4 class="mt-4 font-black">Telemetry</h4>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">Service logs, connection metadata, brute-force attempts, command traces.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="architecture-panel" data-panel="host">
+              <div class="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+                <div class="rounded-3xl bg-[#526b5a] p-7 text-white">
+                  <p class="text-xs font-black uppercase tracking-[0.22em] text-white/62">Execution and Lateral Movement</p>
+                  <h3 class="display mt-3 text-4xl">Host / Active Directory Deception</h3>
+                  <p class="mt-4 leading-7 text-white/80">The internal enterprise layer gives attackers a believable environment for enumeration, credential harvesting, privilege path discovery, and lateral movement.</p>
+                </div>
+                <div class="grid gap-4 md:grid-cols-3">
+                  <div class="rounded-3xl bg-white/70 p-5">
+                    <i class="fa-solid fa-users-gear text-2xl text-[#526b5a]"></i>
+                    <h4 class="mt-4 font-black">Components</h4>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">GOAD Active Directory, domain controller, workstation, file server.</p>
+                  </div>
+                  <div class="rounded-3xl bg-white/70 p-5">
+                    <i class="fa-solid fa-key text-2xl text-[#526b5a]"></i>
+                    <h4 class="mt-4 font-black">Deception Artifacts</h4>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">Decoy accounts, fake admin paths, planted credentials, honeyfiles.</p>
+                  </div>
+                  <div class="rounded-3xl bg-white/70 p-5">
+                    <i class="fa-solid fa-route text-2xl text-[#526b5a]"></i>
+                    <h4 class="mt-4 font-black">Observation Target</h4>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">Enumeration, privilege escalation attempts, credential reuse, host traversal.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="architecture-panel" data-panel="data">
+              <div class="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+                <div class="rounded-3xl bg-[#8f4f2f] p-7 text-white">
+                  <p class="text-xs font-black uppercase tracking-[0.22em] text-white/62">Collection and Exfiltration</p>
+                  <h3 class="display mt-3 text-4xl">Data / Cloud Deception</h3>
+                  <p class="mt-4 leading-7 text-white/80">Higher-value lures test whether attackers pursue cloud targets, inspect decoy data, reuse harvested credentials, or attempt exfiltration-like actions.</p>
+                </div>
+                <div class="grid gap-4 md:grid-cols-3">
+                  <div class="rounded-3xl bg-white/70 p-5">
+                    <i class="fa-solid fa-cloud text-2xl text-[#8f4f2f]"></i>
+                    <h4 class="mt-4 font-black">Components</h4>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">HoneyLambda, decoy S3 buckets, fake API keys, cloud references.</p>
+                  </div>
+                  <div class="rounded-3xl bg-white/70 p-5">
+                    <i class="fa-solid fa-box-archive text-2xl text-[#8f4f2f]"></i>
+                    <h4 class="mt-4 font-black">Deception Value</h4>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">Plausible data targets create a reason for attackers to continue beyond host access.</p>
+                  </div>
+                  <div class="rounded-3xl bg-white/70 p-5">
+                    <i class="fa-solid fa-fingerprint text-2xl text-[#8f4f2f]"></i>
+                    <h4 class="mt-4 font-black">Observation Target</h4>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">API calls, token usage, storage enumeration, collection behaviour.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mermaid-box mt-7">
+              <div class="mermaid">
+                flowchart LR
+                  A["Network Layer<br/>external services"] --> B["Host / AD Layer<br/>internal enterprise context"]
+                  B --> C["Data / Cloud Layer<br/>high-value lures"]
+                  A --> D["Central Telemetry"]
+                  B --> D
+                  C --> D
+                  D --> E["Normalization<br/>artifact identity tags"]
+                  E --> F["Session reconstruction"]
+                F --> G["Behavioural metrics<br/>misdirection, delay, engagement"]
+              </div>
+            </div>
+
+            <div class="mt-7 grid gap-5 lg:grid-cols-3">
+              <div class="rounded-3xl bg-white/70 p-6">
+                <p class="metric-pill"><i class="fa-solid fa-network-wired"></i> Layer Output</p>
+                <h3 class="mt-4 text-xl font-black">Network Layer Evidence</h3>
+                <ul class="mt-3 space-y-2 text-sm leading-6 text-slate-600">
+                  <li>Port and service interest patterns</li>
+                  <li>Authentication attempts and credential guesses</li>
+                  <li>Early command execution or exploit traces</li>
+                  <li>Signals for exposing internal lures</li>
+                </ul>
+              </div>
+              <div class="rounded-3xl bg-white/70 p-6">
+                <p class="metric-pill"><i class="fa-solid fa-users-gear"></i> Layer Output</p>
+                <h3 class="mt-4 text-xl font-black">Host / AD Evidence</h3>
+                <ul class="mt-3 space-y-2 text-sm leading-6 text-slate-600">
+                  <li>Domain and account enumeration</li>
+                  <li>Credential harvesting and reuse attempts</li>
+                  <li>Privilege escalation exploration</li>
+                  <li>Movement between decoy machines</li>
+                </ul>
+              </div>
+              <div class="rounded-3xl bg-white/70 p-6">
+                <p class="metric-pill"><i class="fa-solid fa-cloud"></i> Layer Output</p>
+                <h3 class="mt-4 text-xl font-black">Data / Cloud Evidence</h3>
+                <ul class="mt-3 space-y-2 text-sm leading-6 text-slate-600">
+                  <li>Cloud API key usage attempts</li>
+                  <li>Storage enumeration and object access</li>
+                  <li>Honeyfile opening and collection behaviour</li>
+                  <li>Exfiltration-like target selection</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="telemetry" class="section">
+        <div class="section-inner">
+          <div class="split-title mb-9">
+            <div>
+              <p class="text-sm font-black uppercase tracking-[0.24em] text-[#8f4f2f]">Telemetry and Measurement</p>
+              <h2 class="display mt-3 text-4xl leading-tight lg:text-6xl">How Behaviour Becomes Evidence</h2>
+            </div>
+            <p class="text-lg leading-8 text-slate-600">
+              The architecture is designed not only to attract interaction, but to preserve the sequence and meaning of that interaction across layers.
+            </p>
+          </div>
+
+          <div class="grid gap-5 lg:grid-cols-3">
+            <div class="soft-card rounded-3xl p-6">
+              <i class="fa-solid fa-tags text-3xl text-[#8f4f2f]"></i>
+              <h3 class="mt-4 text-2xl font-black">Artifact Tagging</h3>
+              <p class="mt-3 leading-7 text-slate-600">Each decoy service, credential, file, account, and cloud key receives a unique identity so later interactions can be traced back to the lure that caused them.</p>
+            </div>
+            <div class="soft-card rounded-3xl p-6">
+              <i class="fa-solid fa-code-branch text-3xl text-[#526b5a]"></i>
+              <h3 class="mt-4 text-2xl font-black">Path Reconstruction</h3>
+              <p class="mt-3 leading-7 text-slate-600">Events are correlated into attacker sessions, showing how actions move from network access to host exploration and data/cloud targeting.</p>
+            </div>
+            <div class="soft-card rounded-3xl p-6">
+              <i class="fa-solid fa-chart-simple text-3xl text-[#8f4f2f]"></i>
+              <h3 class="mt-4 text-2xl font-black">Behavioural Metrics</h3>
+              <p class="mt-3 leading-7 text-slate-600">Misdirection, delay, and engagement depth translate raw telemetry into evidence about whether deception influenced attacker behaviour.</p>
+            </div>
+          </div>
+
+          <div class="mt-7 grid gap-5 lg:grid-cols-2">
+            <div class="soft-card rounded-3xl p-6">
+              <h3 class="text-2xl font-black">Normalized Event Fields</h3>
+              <p class="mt-3 leading-7 text-slate-600">A consistent schema makes heterogeneous logs comparable across network services, Windows hosts, Active Directory, and cloud simulation components.</p>
+              <div class="mt-5 grid gap-3 sm:grid-cols-2">
+                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Timestamp</div>
+                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Attacker identifier</div>
+                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Target asset</div>
+                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Action category</div>
+                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Artifact ID</div>
+                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">ATT&CK tactic</div>
+              </div>
+            </div>
+
+            <div class="soft-card rounded-3xl p-6">
+              <h3 class="text-2xl font-black">Metric Operationalization</h3>
+              <div class="mt-5 space-y-4">
+                <div class="rounded-3xl bg-white/70 p-5">
+                  <p class="metric-pill"><i class="fa-solid fa-route"></i> Misdirection</p>
+                  <p class="mt-3 leading-7 text-slate-600">Measured through decoy-path interactions, fake credential use, honeyfile access, and movement toward designed lure routes.</p>
+                </div>
+                <div class="rounded-3xl bg-white/70 p-5">
+                  <p class="metric-pill"><i class="fa-solid fa-clock"></i> Delay</p>
+                  <p class="mt-3 leading-7 text-slate-600">Measured through time spent interacting with deceptive assets, repeated reconnaissance, and detours caused by planted artifacts.</p>
+                </div>
+                <div class="rounded-3xl bg-white/70 p-5">
+                  <p class="metric-pill"><i class="fa-solid fa-layer-group"></i> Engagement Depth</p>
+                  <p class="mt-3 leading-7 text-slate-600">Measured by layer progression, diversity of actions, number of artifact categories touched, and tactic coverage.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="experiment" class="section">
+        <div class="section-inner">
+          <div class="split-title mb-9">
+            <div>
+              <p class="text-sm font-black uppercase tracking-[0.24em] text-[#8f4f2f]">Experimental Scope</p>
+              <h2 class="display mt-3 text-4xl leading-tight lg:text-6xl">Controlled Testbed Design</h2>
+            </div>
+            <p class="text-lg leading-8 text-slate-600">
+              The project uses a contained virtual environment so the architecture can be evaluated safely, reset cleanly, and reproduced for repeated observation.
+            </p>
+          </div>
+
+          <div class="grid gap-5 lg:grid-cols-2">
+            <div class="glass rounded-[34px] p-6 lg:p-8">
+              <h3 class="text-2xl font-black">Proposed Lab Roles</h3>
+              <div class="mt-5 space-y-4">
+                <div class="rounded-3xl bg-white/70 p-5">
+                  <h4 class="font-black">LOG01 - Central Monitoring</h4>
+                  <p class="mt-2 text-sm leading-6 text-slate-600">Receives logs from all deception layers and supports normalization, correlation, and later analysis.</p>
+                </div>
+                <div class="rounded-3xl bg-white/70 p-5">
+                  <h4 class="font-black">TPOT01 - Network Honeypot Layer</h4>
+                  <p class="mt-2 text-sm leading-6 text-slate-600">Hosts exposed deception services and captures first-stage attacker interactions.</p>
+                </div>
+                <div class="rounded-3xl bg-white/70 p-5">
+                  <h4 class="font-black">DC01 / WS01 / FS01 - Internal Enterprise Layer</h4>
+                  <p class="mt-2 text-sm leading-6 text-slate-600">Represents Active Directory, workstation activity, and file resources for post-compromise observation.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-5">
+              <div class="soft-card rounded-3xl p-6">
+                <span class="tag"><i class="fa-solid fa-shield"></i> Safety</span>
+                <h3 class="mt-4 text-2xl font-black">Containment Principles</h3>
+                <p class="mt-3 leading-7 text-slate-600">The environment is isolated from production systems, uses only fabricated data, and restricts outbound behaviour through controlled network boundaries.</p>
+              </div>
+              <div class="soft-card rounded-3xl p-6">
+                <span class="tag"><i class="fa-solid fa-rotate-left"></i> Reproducibility</span>
+                <h3 class="mt-4 text-2xl font-black">Resettable Experiments</h3>
+                <p class="mt-3 leading-7 text-slate-600">Snapshots and documented configuration states allow experiments to be repeated without carrying over attacker modifications or contaminated artifacts.</p>
+              </div>
+              <div class="soft-card rounded-3xl p-6">
+                <span class="tag"><i class="fa-solid fa-vial"></i> Scenarios</span>
+                <h3 class="mt-4 text-2xl font-black">Comparative Observation</h3>
+                <p class="mt-3 leading-7 text-slate-600">The design can support comparison between limited exposure, full layered exposure, and staged activation to understand how architecture changes behaviour.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mermaid-box mt-7">
+            <div class="mermaid">
+              flowchart TD
+                A["Isolated virtual lab"] --> B["External-facing deception network"]
+                A --> C["Internal enterprise network"]
+                A --> D["Management and logging network"]
+                B --> E["TPOT01<br/>honeypot services"]
+                C --> F["DC01<br/>Active Directory"]
+                C --> G["WS01<br/>workstation"]
+                C --> H["FS01<br/>file server and honeyfiles"]
+                D --> I["LOG01<br/>central monitoring"]
+                E --> I
+                F --> I
+                G --> I
+                H --> I
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="contribution" class="section pb-10">
+        <div class="section-inner">
+          <div class="glass rounded-[36px] p-6 lg:p-10">
+            <div class="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+              <div>
+                <p class="text-sm font-black uppercase tracking-[0.24em] text-[#8f4f2f]">Contribution Positioning</p>
+                <h2 class="display mt-3 text-4xl leading-tight lg:text-6xl">What This Update Establishes</h2>
+              </div>
+              <div class="space-y-4">
+                <article class="accordion open soft-card rounded-3xl p-6">
+                  <button class="accordion-toggle flex w-full items-center justify-between gap-4 text-left">
+                    <span class="text-xl font-black">A clear research gap</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                  </button>
+                  <p class="accordion-detail mt-4 leading-7 text-slate-600">The literature review identifies the lack of controlled, integrated evaluation for layered deception across multi-stage attacker behaviour.</p>
+                </article>
+                <article class="accordion soft-card rounded-3xl p-6">
+                  <button class="accordion-toggle flex w-full items-center justify-between gap-4 text-left">
+                    <span class="text-xl font-black">A justified system architecture</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                  </button>
+                  <p class="accordion-detail mt-4 leading-7 text-slate-600">The proposed three-layer design directly responds to the need for environmental continuity and post-compromise observation.</p>
+                </article>
+                <article class="accordion soft-card rounded-3xl p-6">
+                  <button class="accordion-toggle flex w-full items-center justify-between gap-4 text-left">
+                    <span class="text-xl font-black">A measurement direction</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                  </button>
+                  <p class="accordion-detail mt-4 leading-7 text-slate-600">The project shifts evaluation from alert generation toward behavioural evidence: how attackers navigate, what lures they follow, and how deeply they engage.</p>
+                </article>
+              </div>
+            </div>
+          </div>
+
+          <footer class="py-8 text-center text-sm text-slate-500">
+            Progress Update 1 - Deception-in-Depth Honeynet Architecture
+          </footer>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: "base",
+      themeVariables: {
+        primaryColor: "#13211f",
+        primaryTextColor: "#fffaf0",
+        primaryBorderColor: "#13211f",
+        secondaryColor: "#526b5a",
+        secondaryTextColor: "#fffaf0",
+        tertiaryColor: "#8f4f2f",
+        lineColor: "#526b5a",
+        edgeLabelBackground: "#fbf7ec",
+        fontFamily: "Source Sans 3"
+      },
+      flowchart: {
+        htmlLabels: true,
+        curve: "basis"
+      }
+    });
+
+    const menuToggle = document.getElementById("menuToggle");
+    const mobileMenu = document.getElementById("mobileMenu");
+    const navLinks = document.querySelectorAll(".nav-link");
+    const sections = document.querySelectorAll("section[id]");
+
+    menuToggle.addEventListener("click", () => {
+      mobileMenu.classList.toggle("open");
+    });
+
+    navLinks.forEach((link) => {
+      link.addEventListener("click", () => mobileMenu.classList.remove("open"));
+    });
+
+    window.addEventListener("scroll", () => {
+      let current = "overview";
+      sections.forEach((section) => {
+        if (window.scrollY >= section.offsetTop - 180) {
+          current = section.id;
+        }
+      });
+
+      navLinks.forEach((link) => {
+        link.classList.toggle("active", link.getAttribute("href") === "#" + current);
+      });
+    });
+
+    document.querySelectorAll(".architecture-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const layer = tab.dataset.layer;
+        document.querySelectorAll(".architecture-tab").forEach((item) => item.classList.remove("active"));
+        document.querySelectorAll(".architecture-panel").forEach((panel) => panel.classList.remove("active"));
+        tab.classList.add("active");
+        document.querySelector(`[data-panel="${layer}"]`).classList.add("active");
+      });
+    });
+
+    document.querySelectorAll(".accordion-toggle").forEach((button) => {
+      button.addEventListener("click", () => {
+        button.closest(".accordion").classList.toggle("open");
+      });
+    });
+  </script>
+</body>
+</html>
