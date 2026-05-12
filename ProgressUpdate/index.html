@@ -1,847 +1,1957 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Progress Update 1</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&family=Source+Sans+3:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-  <style>
-    :root {
-      --ink: #13211f;
-      --muted: #66746f;
-      --paper: #fbf7ec;
-      --panel: rgba(255, 252, 242, 0.86);
-      --cedar: #8f4f2f;
-      --moss: #526b5a;
-      --fern: #dfe9dc;
-      --blue: #cddfe8;
-      --line: rgba(19, 33, 31, 0.13);
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Progress Update · Deception-in-Depth Honeynet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,300;1,6..72,400;1,6..72,500;1,6..72,600&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
-    * {
-      scroll-behavior: smooth;
-    }
+<style>
+:root{
+  --paper:#F2ECDE;
+  --paper-deep:#E8E0CC;
+  --paper-shade:#DCD2BA;
+  --ink:#1A1714;
+  --ink-soft:#3F3A33;
+  --ink-mute:#6B6359;
+  --rule:#C7BCA0;
+  --rule-soft:#D9CFB6;
+  --oxblood:#8B2E1F;
+  --oxblood-deep:#5E1F15;
+  --steel:#26465A;
+  --steel-soft:#3E6379;
+  --amber:#B57A2A;
+  --moss:#3D5642;
+  --serif:'Newsreader', 'Times New Roman', serif;
+  --sans:'IBM Plex Sans', system-ui, sans-serif;
+  --mono:'JetBrains Mono', 'SF Mono', monospace;
+}
 
-    body {
-      margin: 0;
-      color: var(--ink);
-      font-family: "Source Sans 3", sans-serif;
-      background:
-        radial-gradient(circle at 12% 10%, rgba(143, 79, 47, 0.18), transparent 26rem),
-        radial-gradient(circle at 84% 18%, rgba(82, 107, 90, 0.18), transparent 32rem),
-        linear-gradient(135deg, #fbf7ec 0%, #f3eadc 52%, #eaf2ee 100%);
-    }
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{
+  font-family:var(--serif);
+  font-weight:400;
+  font-size:16.5px;
+  line-height:1.6;
+  color:var(--ink);
+  background:var(--paper);
+  background-image:
+    radial-gradient(1200px 600px at 110% -10%, rgba(139,46,31,0.06), transparent 60%),
+    radial-gradient(900px 500px at -10% 12%, rgba(38,70,90,0.05), transparent 60%);
+  min-height:100vh;
+  position:relative;
+}
+body::before{
+  content:"";
+  position:fixed;inset:0;
+  pointer-events:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.10  0 0 0 0 0.09  0 0 0 0 0.07  0 0 0 0.045 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  mix-blend-mode:multiply;
+  opacity:0.7;
+  z-index:0;
+}
 
-    .display {
-      font-family: "Fraunces", serif;
-    }
+/* ─────────── LAYOUT ─────────── */
+.shell{
+  display:grid;
+  grid-template-columns:260px minmax(0,1fr);
+  min-height:100vh;
+  position:relative;
+  z-index:1;
+}
 
-    .layout {
-      display: grid;
-      grid-template-columns: 290px minmax(0, 1fr);
-      min-height: 100vh;
-    }
+/* ─────────── SIDEBAR ─────────── */
+aside.toc{
+  position:sticky;
+  top:0;
+  height:100vh;
+  padding:38px 26px 28px;
+  border-right:1px solid var(--rule);
+  background:linear-gradient(180deg, rgba(232,224,204,0.92), rgba(220,210,186,0.88));
+  backdrop-filter:blur(14px);
+  overflow-y:auto;
+  font-family:var(--sans);
+  font-size:13px;
+}
+aside.toc::-webkit-scrollbar{width:5px}
+aside.toc::-webkit-scrollbar-thumb{background:var(--rule);border-radius:3px}
 
-    .sidebar {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      padding: 30px 22px;
-      overflow-y: auto;
-      border-right: 1px solid var(--line);
-      background: rgba(251, 247, 236, 0.82);
-      backdrop-filter: blur(18px);
-      z-index: 20;
-    }
+.brand{
+  border-bottom:1px solid var(--rule);
+  padding-bottom:18px;
+  margin-bottom:22px;
+}
+.brand .crest{
+  width:34px;height:34px;
+  border:1.5px solid var(--ink);
+  position:relative;
+  margin-bottom:14px;
+}
+.brand .crest::before,
+.brand .crest::after{
+  content:"";position:absolute;background:var(--ink);
+}
+.brand .crest::before{left:50%;top:5px;bottom:5px;width:1.5px;transform:translateX(-50%)}
+.brand .crest::after{top:50%;left:5px;right:5px;height:1.5px;transform:translateY(-50%)}
+.brand .meta{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  line-height:1.7;
+}
+.brand h1{
+  font-family:var(--serif);
+  font-weight:500;
+  font-size:26px;
+  line-height:1.05;
+  margin-top:8px;
+  color:var(--ink);
+  letter-spacing:-0.015em;
+}
+.brand h1 em{font-style:italic;color:var(--oxblood-deep)}
+.brand .sub{
+  font-family:var(--sans);
+  font-size:11.5px;
+  color:var(--ink-mute);
+  margin-top:8px;
+  letter-spacing:0.02em;
+  line-height:1.45;
+}
 
-    .nav-link {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 11px 12px;
-      border-radius: 16px;
-      color: var(--muted);
-      font-weight: 800;
-      text-decoration: none;
-      transition: 0.2s ease;
-    }
+.toc-title{
+  font-family:var(--mono);
+  font-size:9.5px;
+  letter-spacing:0.24em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;
+}
+.toc-title::after{content:"";flex:1;height:1px;background:var(--rule)}
 
-    .nav-link:hover,
-    .nav-link.active {
-      color: var(--ink);
-      background: rgba(82, 107, 90, 0.14);
-      transform: translateX(3px);
-    }
+.toc-group{margin-bottom:18px}
+.toc-group .gtitle{
+  font-family:var(--serif);
+  font-style:italic;
+  font-size:15px;
+  font-weight:500;
+  color:var(--oxblood-deep);
+  margin-bottom:6px;
+  padding-left:6px;
+}
+.toc-group .glabel{
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  margin-bottom:6px;
+  padding-left:6px;
+}
 
-    .mobile-top {
-      display: none;
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--line);
-      background: rgba(251, 247, 236, 0.92);
-      backdrop-filter: blur(18px);
-    }
+.toc-list{list-style:none}
+.toc-list a{
+  display:grid;
+  grid-template-columns:32px 1fr;
+  gap:8px;
+  padding:5px 6px;
+  text-decoration:none;
+  color:var(--ink-soft);
+  border-radius:2px;
+  transition:background 0.15s ease, color 0.15s ease;
+  align-items:baseline;
+  border-left:2px solid transparent;
+}
+.toc-list a:hover{background:rgba(26,23,20,0.05);color:var(--ink)}
+.toc-list a.active{
+  background:rgba(139,46,31,0.08);
+  color:var(--oxblood-deep);
+  border-left-color:var(--oxblood);
+}
+.toc-list .num{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--ink-mute);
+  letter-spacing:0.04em;
+}
+.toc-list a.active .num{color:var(--oxblood)}
+.toc-list .label{font-family:var(--sans);font-size:12px;font-weight:500;line-height:1.35}
 
-    .mobile-menu {
-      display: none;
-      position: fixed;
-      inset: 62px 14px auto 14px;
-      z-index: 50;
-      padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      background: rgba(251, 247, 236, 0.98);
-      box-shadow: 0 24px 70px rgba(19, 33, 31, 0.22);
-    }
+.toc-foot{
+  border-top:1px solid var(--rule);
+  margin-top:18px;padding-top:16px;
+  font-family:var(--mono);
+  font-size:9.5px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  line-height:1.85;
+}
+.toc-foot .row{display:flex;justify-content:space-between;gap:8px}
+.toc-foot .row span:last-child{color:var(--ink)}
+.toc-foot .ok{color:var(--moss)}
 
-    .mobile-menu.open {
-      display: block;
-    }
+/* ─────────── MAIN ─────────── */
+main{padding:0 0 80px;min-width:0}
 
-    .section {
-      padding: 76px 34px;
-    }
+.page{
+  max-width:1080px;
+  margin:0 auto;
+  padding:0 56px;
+}
 
-    .section-inner {
-      max-width: 1120px;
-      margin: 0 auto;
-    }
+/* Generic block: gutter + content (single column flow) */
+section.block{
+  display:grid;
+  grid-template-columns:64px minmax(0,1fr);
+  column-gap:28px;
+  padding:56px 0;
+  border-bottom:1px solid var(--rule);
+  scroll-margin-top:24px;
+}
+section.block.no-rule{border-bottom:0}
+section.block .gutter{
+  font-family:var(--mono);
+  font-size:10.5px;
+  letter-spacing:0.18em;
+  color:var(--ink-mute);
+  text-transform:uppercase;
+  writing-mode:vertical-rl;
+  transform:rotate(180deg);
+  height:fit-content;
+  position:sticky;top:24px;
+  align-self:start;
+  white-space:nowrap;
+}
+section.block .content{min-width:0}
 
-    .glass {
-      border: 1px solid rgba(255, 255, 255, 0.72);
-      background: var(--panel);
-      box-shadow: 0 24px 70px rgba(19, 33, 31, 0.12);
-      backdrop-filter: blur(18px);
-    }
+/* Section header */
+.sec-head{
+  display:flex;align-items:baseline;gap:14px;
+  margin-bottom:18px;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--rule);
+  flex-wrap:wrap;
+}
+.sec-num{
+  font-family:var(--mono);
+  font-size:12.5px;
+  letter-spacing:0.14em;
+  color:var(--oxblood);
+  font-weight:500;
+}
+.sec-eyebrow{
+  font-family:var(--sans);
+  font-size:11px;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  font-weight:500;
+}
+.sec-title{
+  font-family:var(--serif);
+  font-weight:500;
+  font-size:34px;
+  line-height:1.08;
+  letter-spacing:-0.015em;
+  margin:6px 0 14px;
+  color:var(--ink);
+}
+.sec-title em{font-style:italic;color:var(--oxblood-deep);font-weight:500}
+.sec-lede{
+  font-family:var(--serif);
+  font-size:18px;
+  line-height:1.55;
+  color:var(--ink-soft);
+  max-width:64ch;
+  font-weight:400;
+}
+.sec-lede strong{color:var(--ink);font-weight:500}
 
-    .soft-card {
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.64);
-      box-shadow: 0 18px 42px rgba(19, 33, 31, 0.08);
-    }
+p{margin-top:0.85em;color:var(--ink-soft)}
+p:first-child{margin-top:0}
+p strong{color:var(--ink);font-weight:500}
 
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(82, 107, 90, 0.13);
-      color: var(--moss);
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
+a.inline{color:var(--oxblood-deep);text-decoration:underline;text-decoration-color:rgba(139,46,31,0.3);text-underline-offset:3px}
+a.inline:hover{text-decoration-color:var(--oxblood)}
 
-    .hero-visual {
-      min-height: 390px;
-      background:
-        linear-gradient(135deg, rgba(19, 33, 31, 0.9), rgba(82, 107, 90, 0.74)),
-        url("assets/image1.webp") center / cover;
-    }
+/* Inline aside callout (replaces sticky marginalia) */
+.aside-note{
+  margin:24px 0 0;
+  padding:18px 22px;
+  background:rgba(232,224,204,0.55);
+  border-left:2px solid var(--rule);
+  font-family:var(--sans);
+  font-size:13px;
+  line-height:1.6;
+  color:var(--ink-soft);
+}
+.aside-note h5{
+  font-family:var(--mono);
+  font-size:9.5px;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:var(--oxblood);
+  font-weight:500;
+  margin-bottom:6px;
+}
+.aside-note strong{color:var(--ink);font-weight:600}
+.aside-note em{font-family:var(--serif);font-style:italic;color:var(--ink)}
 
-    .hero-chip {
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      background: rgba(255, 255, 255, 0.13);
-      backdrop-filter: blur(14px);
-    }
+/* ─────────── HERO / FRONTISPIECE ─────────── */
+.hero{
+  padding:78px 0 50px;
+  border-bottom:1px solid var(--rule);
+}
+.hero .eyebrow{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:0.34em;
+  text-transform:uppercase;
+  color:var(--oxblood);
+  margin-bottom:18px;
+  font-weight:500;
+}
 
-    .split-title {
-      display: grid;
-      gap: 24px;
-      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-      align-items: end;
-    }
+.hero h1{
+  font-family:var(--serif);
+  font-weight:400;
+  font-size:clamp(56px, 11vw, 132px);
+  line-height:0.92;
+  letter-spacing:-0.04em;
+  color:var(--ink);
+  animation:fadeUp 0.8s ease 0.05s both;
+}
+.hero h1 em{
+  font-style:italic;
+  color:var(--oxblood-deep);
+  font-weight:400;
+}
+.hero .subtitle{
+  font-family:var(--serif);
+  font-style:italic;
+  font-size:clamp(20px, 2.4vw, 26px);
+  font-weight:400;
+  color:var(--ink-soft);
+  margin-top:18px;
+  letter-spacing:-0.005em;
+  line-height:1.3;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 
-    .review-card {
-      position: relative;
-      overflow: hidden;
-    }
+.hero .meta-strip{
+  display:flex;flex-wrap:wrap;gap:8px 26px;
+  margin-top:34px;
+  padding-top:22px;
+  border-top:1px solid var(--rule);
+  font-family:var(--mono);
+  font-size:10.5px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+}
+.hero .meta-strip span strong{color:var(--ink);font-weight:500;font-family:var(--mono)}
 
-    .review-card::after {
-      content: "";
-      position: absolute;
-      right: -42px;
-      bottom: -42px;
-      width: 130px;
-      height: 130px;
-      border-radius: 50%;
-      background: rgba(143, 79, 47, 0.12);
-    }
+.hero .abstract{
+  margin-top:36px;
+  font-family:var(--serif);
+  font-size:19px;
+  line-height:1.55;
+  color:var(--ink-soft);
+  max-width:62ch;
+}
+.hero .abstract strong{font-weight:500;color:var(--ink)}
 
-    .architecture-tab {
-      border: 1px solid var(--line);
-      color: var(--muted);
-      background: rgba(255, 255, 255, 0.5);
-      transition: 0.2s ease;
-    }
+/* ─────────── CYCLE STATUS BANNER ─────────── */
+.status-banner{
+  margin:28px 0 0;
+  border:1px solid var(--ink);
+  background:rgba(255,251,242,0.55);
+  position:relative;
+}
+.status-banner .head{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 22px;
+  background:var(--ink);
+  color:var(--paper);
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:0.24em;
+  text-transform:uppercase;
+}
+.status-banner .head .pill{
+  display:inline-block;
+  padding:3px 9px;
+  background:var(--moss);
+  color:var(--paper);
+  border-radius:2px;
+  font-size:10px;
+}
+.status-banner .head .summary{
+  margin-left:auto;
+  color:var(--paper-shade);
+  font-size:10px;
+  letter-spacing:0.18em;
+}
+.status-banner .body{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:0;
+}
+.status-banner .item{
+  padding:24px 22px 22px;
+  border-right:1px solid var(--rule);
+  position:relative;
+}
+.status-banner .item:last-child{border-right:0}
+.status-banner .item .check{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:24px;height:24px;
+  border:1.5px solid var(--moss);
+  color:var(--moss);
+  font-family:var(--mono);
+  font-size:14px;font-weight:600;
+  border-radius:50%;
+  margin-bottom:14px;
+}
+.status-banner .item .stage{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  margin-bottom:6px;
+}
+.status-banner .item h3{
+  font-family:var(--serif);
+  font-style:italic;
+  font-weight:500;
+  font-size:24px;
+  line-height:1.15;
+  color:var(--ink);
+  letter-spacing:-0.01em;
+  margin-bottom:8px;
+}
+.status-banner .item p{
+  font-family:var(--sans);
+  font-size:13px;
+  line-height:1.55;
+  color:var(--ink-soft);
+  margin:0;
+}
+.status-banner .item .key{
+  margin-top:12px;
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.14em;
+  color:var(--oxblood);
+}
 
-    .architecture-tab.active,
-    .architecture-tab:hover {
-      color: #fffaf0;
-      border-color: var(--moss);
-      background: var(--moss);
-      box-shadow: 0 14px 26px rgba(82, 107, 90, 0.18);
-    }
+/* ─────────── PART DIVIDERS ─────────── */
+.part-divider{
+  padding:88px 0 32px;
+  display:grid;
+  grid-template-columns:64px minmax(0,1fr);
+  column-gap:28px;
+  border-top:2px solid var(--ink);
+  margin-top:24px;
+}
+.part-divider .gutter{
+  font-family:var(--mono);
+  font-size:10.5px;
+  letter-spacing:0.18em;
+  color:var(--ink-mute);
+  text-transform:uppercase;
+}
+.part-divider .pcontent{}
+.part-divider .pmark{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:0.32em;
+  text-transform:uppercase;
+  color:var(--oxblood);
+  margin-bottom:14px;
+  font-weight:500;
+  display:flex;align-items:center;gap:14px;
+  flex-wrap:wrap;
+}
+.part-divider .pmark .pchip{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:3px 9px;
+  background:rgba(61,86,66,0.14);
+  color:var(--moss);
+  border-radius:2px;
+  font-size:9.5px;
+  letter-spacing:0.18em;
+}
+.part-divider .pmark .pchip::before{content:"●";font-size:8px}
+.part-divider h2{
+  font-family:var(--serif);
+  font-weight:500;
+  font-size:clamp(48px, 6vw, 72px);
+  line-height:0.95;
+  letter-spacing:-0.025em;
+  color:var(--ink);
+  margin-bottom:18px;
+}
+.part-divider h2 em{font-style:italic;color:var(--oxblood-deep);font-weight:500}
+.part-divider .pintro{
+  font-family:var(--serif);
+  font-size:19px;
+  line-height:1.55;
+  color:var(--ink-soft);
+  max-width:62ch;
+}
+.part-divider .pintro strong{color:var(--ink);font-weight:500}
+.part-divider .deliverables{
+  margin-top:24px;
+  display:flex;flex-wrap:wrap;gap:8px;
+}
+.part-divider .deliverables span{
+  font-family:var(--sans);
+  font-size:12px;
+  font-weight:500;
+  padding:5px 10px;
+  background:var(--paper-deep);
+  border:1px solid var(--rule);
+  color:var(--ink);
+  border-radius:2px;
+}
 
-    .architecture-panel {
-      display: none;
-    }
+/* ─────────── COMPONENTS ─────────── */
 
-    .architecture-panel.active {
-      display: block;
-      animation: fadeUp 0.22s ease both;
-    }
+/* Numbered question stack */
+.qstack{display:flex;flex-direction:column;gap:0;margin-top:8px}
+.qstack .qrow{
+  display:grid;
+  grid-template-columns:84px 1fr;
+  gap:24px;
+  padding:22px 0;
+  border-top:1px solid var(--rule);
+  align-items:start;
+}
+.qstack .qrow:last-child{border-bottom:1px solid var(--rule)}
+.qstack .qnum{
+  font-family:var(--serif);
+  font-style:italic;
+  font-size:50px;
+  line-height:0.9;
+  color:var(--oxblood);
+  font-weight:400;
+}
+.qstack .qbody h3{
+  font-family:var(--serif);
+  font-weight:500;
+  font-size:21px;
+  line-height:1.25;
+  color:var(--ink);
+  letter-spacing:-0.01em;
+  margin-bottom:8px;
+}
+.qstack .qbody h3 em{font-style:italic}
+.qstack .qbody p{font-size:15.5px;line-height:1.6;color:var(--ink-soft);margin:0}
+.qstack .qbody .tag{
+  display:inline-block;
+  font-family:var(--mono);
+  font-size:9.5px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  margin-bottom:8px;
+}
 
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+/* Pull quote */
+.pullquote{
+  margin:32px 0 0;
+  padding:28px 32px;
+  background:var(--paper-deep);
+  border-left:3px solid var(--oxblood);
+  font-family:var(--serif);
+  font-style:italic;
+  font-size:22px;
+  line-height:1.4;
+  color:var(--ink);
+  font-weight:400;
+  letter-spacing:-0.005em;
+  position:relative;
+}
+.pullquote::before{
+  content:attr(data-label);
+  position:absolute;
+  top:-8px;left:32px;
+  background:var(--paper);
+  padding:0 10px;
+  font-family:var(--mono);
+  font-style:normal;
+  font-size:9.5px;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:var(--oxblood);
+}
+.pullquote em{color:var(--oxblood-deep)}
 
-    .mermaid-box {
-      overflow-x: auto;
-      border: 1px solid var(--line);
-      border-radius: 28px;
-      background: rgba(255, 255, 255, 0.72);
-      padding: 24px;
-    }
+/* Theme chips */
+.themes{
+  display:flex;flex-wrap:wrap;gap:6px;
+  margin-top:8px;
+}
+.themes span{
+  font-family:var(--sans);
+  font-size:12.5px;
+  font-weight:500;
+  padding:6px 11px;
+  background:var(--paper-deep);
+  border:1px solid var(--rule);
+  color:var(--ink);
+  border-radius:2px;
+}
 
-    .accordion {
-      border-left: 5px solid var(--cedar);
-    }
+/* Findings cards (3-up) */
+.findings{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:0;
+  margin-top:16px;
+  border-top:1px solid var(--ink);
+  border-bottom:1px solid var(--ink);
+}
+.findings .f{
+  padding:22px 22px 22px 0;
+  border-right:1px solid var(--rule);
+  position:relative;
+}
+.findings .f:not(:first-child){padding-left:22px}
+.findings .f:last-child{border-right:0;padding-right:0}
+.findings .f .label{
+  font-family:var(--mono);
+  font-size:9.5px;
+  letter-spacing:0.22em;
+  color:var(--oxblood);
+  margin-bottom:8px;
+  text-transform:uppercase;
+}
+.findings .f h4{
+  font-family:var(--serif);
+  font-weight:500;
+  font-size:20px;
+  line-height:1.2;
+  margin-bottom:8px;
+  color:var(--ink);
+  letter-spacing:-0.01em;
+}
+.findings .f h4 em{font-style:italic}
+.findings .f p{font-family:var(--sans);font-size:13px;line-height:1.55;color:var(--ink-soft);margin:0}
 
-    .accordion-detail {
-      display: none;
-    }
+/* Tables — academic style */
+.tbl{
+  width:100%;
+  border-collapse:collapse;
+  font-family:var(--sans);
+  font-size:13.5px;
+  margin-top:8px;
+}
+.tbl thead th{
+  text-align:left;
+  font-family:var(--mono);
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  padding:10px 12px 10px 0;
+  border-bottom:1.5px solid var(--ink);
+  vertical-align:bottom;
+}
+.tbl tbody td{
+  padding:14px 12px 14px 0;
+  vertical-align:top;
+  border-bottom:1px solid var(--rule);
+  color:var(--ink-soft);
+  line-height:1.5;
+}
+.tbl tbody td:first-child{
+  font-weight:600;
+  color:var(--ink);
+  width:24%;
+  padding-right:16px;
+}
+.tbl tbody tr:last-child td{border-bottom:0}
+.tbl .mono{font-family:var(--mono);font-size:12.5px;color:var(--ink)}
+.tbl-wrap{overflow-x:auto;margin-top:8px;-webkit-overflow-scrolling:touch}
+.tbl-wrap .tbl{margin-top:0;min-width:560px}
 
-    .accordion.open .accordion-detail {
-      display: block;
-    }
+/* Principle strip */
+.principles{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  border-top:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+  margin-top:8px;
+}
+.principles .p{
+  padding:22px 20px 22px;
+  border-right:1px solid var(--rule);
+}
+.principles .p:last-child{border-right:0}
+.principles .p .n{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.16em;
+  color:var(--oxblood);
+  margin-bottom:10px;
+  display:block;
+}
+.principles .p h4{
+  font-family:var(--serif);
+  font-weight:500;
+  font-size:18px;
+  line-height:1.2;
+  margin-bottom:10px;
+  color:var(--ink);
+  letter-spacing:-0.01em;
+}
+.principles .p h4 em{font-style:italic;color:var(--oxblood-deep)}
+.principles .p p{font-family:var(--sans);font-size:13px;line-height:1.55;color:var(--ink-soft);margin:0}
 
-    .evidence-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      overflow: hidden;
-      border-radius: 24px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.66);
-    }
+/* ─────────── ARCHITECTURE SCHEMATIC ─────────── */
+.schematic{
+  border:1px solid var(--rule);
+  background:rgba(255,251,242,0.45);
+  padding:28px 24px 22px;
+  margin:20px 0 0;
+  position:relative;
+}
+.schematic .lbl{
+  position:absolute;top:-10px;left:22px;
+  background:var(--paper);
+  padding:0 10px;
+  font-family:var(--mono);
+  font-size:9.5px;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+}
+.schematic svg{display:block;width:100%;height:auto}
 
-    .evidence-table th,
-    .evidence-table td {
-      padding: 18px;
-      text-align: left;
-      vertical-align: top;
-      border-bottom: 1px solid var(--line);
-    }
+/* Layer cards — 2 column (label + body), telemetry strip below */
+.layers{
+  display:flex;flex-direction:column;
+  margin-top:32px;
+  border-top:1px solid var(--ink);
+}
+.layer{
+  display:grid;
+  grid-template-columns:88px minmax(0,1fr);
+  column-gap:24px;
+  padding:28px 0 26px;
+  border-bottom:1px solid var(--rule);
+}
+.layer:last-child{border-bottom:1px solid var(--ink)}
+.layer .ladge{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.16em;
+  color:var(--ink-mute);
+  text-transform:uppercase;
+}
+.layer .ladge .lnum{
+  display:block;
+  font-family:var(--serif);
+  font-style:italic;
+  font-size:46px;
+  line-height:0.9;
+  color:var(--oxblood);
+  margin-bottom:6px;
+  font-weight:400;
+}
+.layer.steel .ladge .lnum{color:var(--steel)}
+.layer.moss .ladge .lnum{color:var(--moss)}
 
-    .evidence-table th {
-      color: var(--ink);
-      background: rgba(82, 107, 90, 0.12);
-      font-size: 13px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
+.layer .lbody h3{
+  font-family:var(--serif);
+  font-weight:500;
+  font-size:25px;
+  line-height:1.18;
+  margin-bottom:6px;
+  color:var(--ink);
+  letter-spacing:-0.012em;
+}
+.layer .lbody h3 em{font-style:italic}
+.layer .lbody .sub{
+  font-family:var(--sans);
+  font-size:11.5px;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  margin-bottom:12px;
+  font-weight:500;
+}
+.layer .lbody p{font-size:15px;line-height:1.55;color:var(--ink-soft);margin:0 0 14px}
 
-    .evidence-table tr:last-child td {
-      border-bottom: 0;
-    }
+.kvgrid{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:5px 16px;
+  font-family:var(--sans);
+  font-size:12.5px;
+  margin-top:6px;
+}
+.kvgrid dt{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  padding-top:3px;
+}
+.kvgrid dd{color:var(--ink);line-height:1.5}
 
-    .question-card {
-      position: relative;
-      overflow: hidden;
-      min-height: 210px;
-    }
+.layer .telem{
+  grid-column:1 / -1;
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px dashed var(--rule);
+  display:flex;flex-wrap:wrap;gap:10px 22px;
+  font-family:var(--sans);
+  font-size:12.5px;
+}
+.layer .telem .tlabel{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+}
+.layer .telem ul{
+  display:flex;flex-wrap:wrap;gap:4px 18px;
+  list-style:none;margin:0;padding:0;
+  flex:1;
+}
+.layer .telem li{
+  color:var(--ink-soft);
+  display:inline-flex;align-items:baseline;gap:6px;
+}
+.layer .telem li .code{
+  font-family:var(--mono);
+  font-size:9.5px;
+  color:var(--oxblood-deep);
+  letter-spacing:0.04em;
+}
+.layer.steel .telem li .code{color:var(--steel)}
+.layer.moss .telem li .code{color:var(--moss)}
 
-    .question-card::before {
-      content: attr(data-number);
-      position: absolute;
-      right: 18px;
-      top: 8px;
-      color: rgba(82, 107, 90, 0.12);
-      font-family: "Fraunces", serif;
-      font-size: 92px;
-      font-weight: 800;
-      line-height: 1;
-    }
+/* Calibration table */
+.calib{
+  width:100%;
+  border-collapse:collapse;
+  font-family:var(--sans);
+  font-size:13.5px;
+  margin-top:8px;
+}
+.calib thead th{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  font-weight:500;
+  text-align:left;
+  padding:11px 14px;
+  border-bottom:1.5px solid var(--ink);
+  background:var(--paper-deep);
+}
+.calib tbody td{
+  padding:13px 14px;
+  border-bottom:1px solid var(--rule);
+  vertical-align:top;
+  color:var(--ink-soft);
+}
+.calib tbody tr:nth-child(odd) td{background:rgba(220,210,186,0.18)}
+.calib tbody td:first-child{font-weight:600;color:var(--ink);font-family:var(--serif);font-size:15px}
+.calib tbody td.choice{
+  font-family:var(--mono);
+  font-size:12.5px;
+  color:var(--oxblood-deep);
+  letter-spacing:0.04em;
+  border-left:1px solid var(--rule);
+}
 
-    .requirement-step {
-      position: relative;
-      padding-left: 54px;
-    }
+/* Anti-pattern grid */
+.antipatterns{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0;
+  margin-top:8px;
+  border:1px solid var(--ink);
+}
+.antipatterns .ap{
+  padding:20px 22px;
+  border-right:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+}
+.antipatterns .ap:nth-child(2n){border-right:0}
+.antipatterns .ap:nth-last-child(-n+2){border-bottom:0}
+.antipatterns .ap .x{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--oxblood);
+  letter-spacing:0.16em;
+  margin-bottom:6px;
+}
+.antipatterns .ap h4{
+  font-family:var(--serif);
+  font-weight:500;
+  font-size:18px;
+  line-height:1.2;
+  margin-bottom:6px;
+  color:var(--ink);
+}
+.antipatterns .ap p{font-family:var(--sans);font-size:13px;line-height:1.5;color:var(--ink-soft);margin:0 0 8px}
+.antipatterns .ap code{font-family:var(--mono);font-size:11.5px;background:var(--paper-deep);padding:1px 5px;border-radius:2px;color:var(--ink)}
+.antipatterns .ap .impact{
+  font-family:var(--sans);
+  font-size:12px;
+  color:var(--oxblood-deep);
+  font-style:italic;
+  border-top:1px dashed var(--rule);
+  padding-top:8px;
+  margin-top:8px;
+}
+.antipatterns .ap .impact::before{
+  content:"Impact ";
+  font-family:var(--mono);font-style:normal;
+  font-size:9.5px;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--ink-mute);margin-right:6px;
+}
 
-    .requirement-step::before {
-      content: "";
-      position: absolute;
-      left: 18px;
-      top: 42px;
-      bottom: -22px;
-      width: 2px;
-      background: rgba(82, 107, 90, 0.18);
-    }
+/* ATT&CK matrix */
+.attack{
+  width:100%;
+  border-collapse:collapse;
+  font-family:var(--sans);
+  font-size:12.5px;
+  margin-top:8px;
+}
+.attack thead th{
+  font-family:var(--mono);
+  font-size:9.5px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  font-weight:500;
+  padding:10px 12px;
+  text-align:left;
+  border-bottom:1.5px solid var(--ink);
+}
+.attack tbody td{
+  padding:11px 12px;
+  border-bottom:1px solid var(--rule);
+  vertical-align:top;
+}
+.attack .lay{
+  font-family:var(--serif);
+  font-style:italic;
+  font-size:14px;
+  color:var(--oxblood-deep);
+  font-weight:500;
+  width:14%;
+}
+.attack .layer-1{border-left:3px solid var(--oxblood)}
+.attack .layer-2{border-left:3px solid var(--steel)}
+.attack .layer-3{border-left:3px solid var(--moss)}
+.attack .tactic{font-weight:600;color:var(--ink);font-family:var(--sans);width:24%}
+.attack .tac-id{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--ink-mute);
+  letter-spacing:0.04em;
+  display:block;
+  margin-top:1px;
+  font-weight:400;
+}
+.attack .tech{color:var(--ink-soft)}
+.attack .tech .tcode{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--steel);
+  margin-right:6px;
+  letter-spacing:0.04em;
+}
+.attack .ev{color:var(--ink-soft);font-style:italic}
 
-    .requirement-step:last-child::before {
-      display: none;
-    }
+/* Code block (event schema) */
+.codeblock{
+  margin-top:18px;
+  background:#1A1714;
+  color:#E8E0CC;
+  padding:24px 26px;
+  font-family:var(--mono);
+  font-size:12.5px;
+  line-height:1.75;
+  border-left:3px solid var(--oxblood);
+  position:relative;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.codeblock::before{
+  content:"event.schema.json";
+  position:absolute;top:-1px;right:0;
+  background:var(--oxblood);
+  color:#F2ECDE;
+  padding:5px 12px;
+  font-size:9.5px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+}
+.codeblock .k{color:#D4A574}
+.codeblock .s{color:#A8C49A}
+.codeblock .t{color:#8AB3C7}
+.codeblock .c{color:#7A736B;font-style:italic}
+.codeblock .p{color:#C9BFA8}
 
-    .requirement-dot {
-      position: absolute;
-      left: 0;
-      top: 0;
-      display: grid;
-      width: 38px;
-      height: 38px;
-      place-items: center;
-      border-radius: 16px;
-      color: #fffaf0;
-      background: var(--moss);
-      font-weight: 900;
-      box-shadow: 0 12px 24px rgba(82, 107, 90, 0.18);
-    }
+/* Metric stack — simplified to 2-col */
+.metricstack{display:flex;flex-direction:column;border-top:1px solid var(--ink);margin-top:8px}
+.metricstack .met{
+  display:grid;
+  grid-template-columns:160px minmax(0,1fr);
+  gap:24px;
+  padding:24px 0;
+  border-bottom:1px solid var(--rule);
+  align-items:start;
+}
+.metricstack .met:last-child{border-bottom:1px solid var(--ink)}
+.metricstack .met .mname{
+  font-family:var(--serif);
+  font-style:italic;
+  font-size:24px;
+  font-weight:500;
+  color:var(--oxblood-deep);
+  letter-spacing:-0.01em;
+  line-height:1.05;
+}
+.metricstack .met .mname .tcode{
+  display:block;
+  font-family:var(--mono);
+  font-size:10px;
+  font-style:normal;
+  color:var(--ink-mute);
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  margin-top:8px;
+  font-weight:500;
+}
+.metricstack .met .mbody h4{
+  font-family:var(--sans);
+  font-size:10.5px;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  font-weight:500;
+  margin-bottom:6px;
+}
+.metricstack .met .mbody h4:not(:first-child){margin-top:14px}
+.metricstack .met .mbody p{margin:0 0 6px;font-size:14.5px;line-height:1.55;color:var(--ink-soft)}
+.metricstack .met .mbody .formulas{display:flex;flex-wrap:wrap;gap:6px}
+.formula{
+  display:inline-block;
+  font-family:var(--mono);
+  font-size:12.5px;
+  background:var(--paper-deep);
+  border:1px solid var(--rule);
+  padding:6px 11px;
+  color:var(--ink);
+  letter-spacing:0.02em;
+}
+.formula .v{color:var(--oxblood-deep);font-weight:500}
+.formula .op{color:var(--ink-mute);margin:0 4px}
 
-    .metric-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border-radius: 999px;
-      padding: 8px 12px;
-      background: rgba(143, 79, 47, 0.12);
-      color: var(--cedar);
-      font-size: 13px;
-      font-weight: 900;
-    }
+/* Sample session telemetry */
+.sessions{
+  width:100%;
+  border-collapse:collapse;
+  font-family:var(--mono);
+  font-size:12px;
+  margin-top:8px;
+}
+.sessions thead th{
+  font-size:9.5px;
+  font-weight:500;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  padding:10px 8px;
+  text-align:right;
+  border-bottom:1.5px solid var(--ink);
+  background:var(--paper-deep);
+}
+.sessions thead th:first-child,
+.sessions thead th:nth-child(2){text-align:left}
+.sessions tbody td{
+  padding:13px 8px;
+  border-bottom:1px solid var(--rule);
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+  color:var(--ink);
+}
+.sessions tbody td:first-child{
+  font-family:var(--serif);
+  font-style:italic;
+  font-size:14px;
+  text-align:left;
+  color:var(--oxblood-deep);
+  font-weight:500;
+}
+.sessions tbody td:nth-child(2){text-align:left;color:var(--ink-soft)}
+.sessions tbody td .mark{
+  display:inline-block;width:8px;height:8px;border-radius:50%;
+  background:var(--moss);margin-right:6px;vertical-align:middle;
+}
+.sessions tbody td .mark.no{background:var(--paper-shade)}
+.sessions tfoot td{
+  padding:14px 8px;
+  font-family:var(--sans);
+  font-size:11px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  border-top:1.5px solid var(--ink);
+  text-align:left;
+}
 
-    @media (max-width: 1024px) {
-      .layout {
-        display: block;
-      }
+/* Implementation status grid */
+.statusgrid{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:1px;
+  background:var(--rule);
+  border:1px solid var(--rule);
+  margin-top:8px;
+}
+.statusgrid .item{
+  background:var(--paper);
+  padding:22px 22px;
+}
+.statusgrid .item .top{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+}
+.statusgrid .item .top .tag{
+  font-family:var(--mono);
+  font-size:9.5px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+}
+.statusgrid .item .status{
+  font-family:var(--mono);
+  font-size:9.5px;
+  letter-spacing:0.16em;
+  padding:2px 8px;
+  border-radius:2px;
+  text-transform:uppercase;
+}
+.statusgrid .item .status.done{background:rgba(61,86,66,0.14);color:var(--moss)}
+.statusgrid .item .status.in-prog{background:rgba(181,122,42,0.14);color:var(--amber)}
+.statusgrid .item .status.eval{background:rgba(38,70,90,0.12);color:var(--steel)}
+.statusgrid .item h4{
+  font-family:var(--serif);
+  font-weight:500;
+  font-size:21px;
+  line-height:1.18;
+  margin-bottom:8px;
+  color:var(--ink);
+  letter-spacing:-0.01em;
+}
+.statusgrid .item h4 em{font-style:italic}
+.statusgrid .item p{font-family:var(--sans);font-size:13px;line-height:1.55;color:var(--ink-soft);margin:0 0 10px}
+.statusgrid .item ul{list-style:none;margin:0;padding:0;font-family:var(--sans);font-size:12.5px;color:var(--ink-soft)}
+.statusgrid .item ul li{padding:3px 0;display:flex;gap:8px}
+.statusgrid .item ul li::before{content:"·";color:var(--oxblood);font-weight:600}
 
-      .sidebar {
-        display: none;
-      }
+/* Component readiness table */
+.readiness{
+  width:100%;
+  border-collapse:collapse;
+  font-family:var(--sans);
+  font-size:13px;
+  margin-top:8px;
+}
+.readiness thead th{
+  font-family:var(--mono);
+  font-size:9.5px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  font-weight:500;
+  text-align:left;
+  padding:11px 10px;
+  border-bottom:1.5px solid var(--ink);
+}
+.readiness thead th.center{text-align:center}
+.readiness tbody td{
+  padding:14px 10px;
+  border-bottom:1px solid var(--rule);
+  vertical-align:middle;
+  color:var(--ink-soft);
+  line-height:1.5;
+}
+.readiness tbody td:first-child{
+  font-family:var(--serif);
+  font-style:italic;
+  font-size:16px;
+  color:var(--ink);
+  font-weight:500;
+  width:24%;
+}
+.readiness .gauge{
+  display:inline-flex;gap:3px;justify-content:center;width:100%;
+}
+.readiness .gauge .pip{
+  width:14px;height:5px;background:var(--paper-shade);border-radius:1px;
+}
+.readiness .gauge .pip.on{background:var(--oxblood)}
+.readiness .gauge .pip.amber{background:var(--amber)}
+.readiness .gauge .pip.steel{background:var(--steel)}
+.readiness td.center{text-align:center}
+.readiness .effort{
+  font-family:var(--mono);
+  font-size:10.5px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+}
 
-      .mobile-top {
-        display: flex;
-      }
+/* Considerations grid */
+.considerations{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0;
+  margin-top:8px;
+  border-top:1px solid var(--ink);
+  border-bottom:1px solid var(--ink);
+}
+.considerations .c{
+  padding:22px 22px 22px 0;
+  border-bottom:1px solid var(--rule);
+  border-right:1px solid var(--rule);
+}
+.considerations .c:nth-child(2n){border-right:0;padding-left:22px;padding-right:0}
+.considerations .c:nth-child(2n+1):not(:first-child){padding-top:22px}
+.considerations .c:nth-child(2):not(:first-child){padding-left:22px}
+.considerations .c:nth-last-child(-n+2){border-bottom:0}
+.considerations .c .ord{
+  font-family:var(--mono);
+  font-size:10.5px;
+  letter-spacing:0.18em;
+  color:var(--oxblood);
+  margin-bottom:6px;
+  display:block;
+}
+.considerations .c h4{
+  font-family:var(--serif);
+  font-weight:500;
+  font-size:19px;
+  line-height:1.2;
+  letter-spacing:-0.01em;
+  margin-bottom:8px;
+  color:var(--ink);
+}
+.considerations .c h4 em{font-style:italic}
+.considerations .c p{font-family:var(--sans);font-size:13px;line-height:1.55;color:var(--ink-soft);margin:0}
 
-      .section {
-        padding: 58px 18px;
-      }
+/* Trajectory steps */
+.trajectory{
+  margin-top:14px;
+  display:flex;flex-direction:column;
+}
+.trajectory .step{
+  display:grid;
+  grid-template-columns:64px minmax(0,1fr);
+  gap:20px;
+  padding:18px 0;
+  border-bottom:1px solid var(--rule);
+  align-items:start;
+}
+.trajectory .step:first-child{border-top:1px solid var(--ink)}
+.trajectory .step:last-child{border-bottom:1px solid var(--ink)}
+.trajectory .step .o{
+  font-family:var(--mono);
+  font-size:10.5px;
+  color:var(--oxblood);
+  letter-spacing:0.14em;
+  padding-top:3px;
+  text-transform:uppercase;
+}
+.trajectory .step h4{
+  font-family:var(--serif);
+  font-weight:500;
+  font-size:19px;
+  line-height:1.25;
+  margin-bottom:6px;
+  color:var(--ink);
+  letter-spacing:-0.005em;
+}
+.trajectory .step h4 em{font-style:italic}
+.trajectory .step p{font-family:var(--sans);font-size:13px;line-height:1.55;color:var(--ink-soft);margin:0 0 6px}
+.trajectory .step .deps{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  margin-top:4px;
+}
 
-      .split-title {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+/* Closing colophon */
+.colophon{
+  padding:60px 0 30px;
+  border-top:1px solid var(--rule);
+  margin-top:24px;
+  display:grid;
+  grid-template-columns:1.4fr 1fr;
+  column-gap:32px;
+}
+.colophon .left{
+  font-family:var(--serif);
+  font-style:italic;
+  font-size:23px;
+  line-height:1.3;
+  color:var(--ink);
+  font-weight:400;
+  letter-spacing:-0.01em;
+}
+.colophon .left em{color:var(--oxblood-deep)}
+.colophon .right{
+  font-family:var(--mono);
+  font-size:10.5px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--ink-mute);
+  line-height:2;
+  text-align:right;
+}
+.colophon .right span{color:var(--ink);display:block}
+
+/* Mobile bar (hidden desktop) */
+.mobile-bar{display:none}
+
+/* ─────────── RESPONSIVE ─────────── */
+@media (max-width:1080px){
+  .page{padding:0 36px}
+  .layer{grid-template-columns:64px minmax(0,1fr);column-gap:18px}
+  .layer .ladge .lnum{font-size:38px}
+  .principles{grid-template-columns:repeat(2,1fr)}
+  .principles .p:nth-child(2){border-right:0}
+  .principles .p:nth-child(-n+2){border-bottom:1px solid var(--rule)}
+  .findings{grid-template-columns:1fr}
+  .findings .f{border-right:0;border-bottom:1px solid var(--rule);padding:18px 0}
+  .findings .f:last-child{border-bottom:0}
+  .findings .f:not(:first-child){padding-left:0}
+  .antipatterns{grid-template-columns:1fr}
+  .antipatterns .ap{border-right:0}
+  .considerations{grid-template-columns:1fr}
+  .considerations .c{border-right:0;padding-left:0;padding-right:0}
+  .considerations .c:nth-child(2n){padding-left:0;padding-right:0}
+  .statusgrid{grid-template-columns:1fr}
+  .status-banner .body{grid-template-columns:1fr}
+  .status-banner .item{border-right:0;border-bottom:1px solid var(--rule)}
+  .status-banner .item:last-child{border-bottom:0}
+  .colophon{grid-template-columns:1fr;gap:18px}
+  .colophon .right{text-align:left}
+}
+@media (max-width:840px){
+  .shell{grid-template-columns:1fr}
+  aside.toc{display:none}
+  .mobile-bar{
+    display:flex;align-items:center;justify-content:space-between;
+    position:sticky;top:0;z-index:50;
+    padding:14px 22px;
+    background:rgba(242,236,222,0.96);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--rule);
+  }
+  .mobile-bar .mt{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--ink)}
+  .mobile-bar .mb{
+    font-family:var(--mono);font-size:10px;letter-spacing:0.18em;
+    text-transform:uppercase;color:var(--ink);
+    background:transparent;border:1px solid var(--rule);
+    padding:7px 12px;cursor:pointer;
+  }
+  .mobile-menu{
+    display:none;background:var(--paper);
+    border-bottom:1px solid var(--rule);
+    padding:14px 22px 22px;
+    position:sticky;top:50px;z-index:49;
+    max-height:70vh;overflow-y:auto;
+  }
+  .mobile-menu.open{display:block}
+  .mobile-menu .mh{
+    font-family:var(--mono);font-size:10px;letter-spacing:0.22em;
+    text-transform:uppercase;color:var(--oxblood);
+    margin:14px 0 6px;
+  }
+  .mobile-menu .mh:first-child{margin-top:0}
+  .mobile-menu a{
+    display:block;padding:7px 0;
+    font-family:var(--sans);font-size:13.5px;
+    color:var(--ink);text-decoration:none;
+    border-bottom:1px dotted var(--rule);
+  }
+  .page{padding:0 22px}
+  section.block{grid-template-columns:1fr;gap:14px}
+  section.block .gutter{
+    writing-mode:horizontal-tb;
+    transform:none;
+    position:static;
+    margin-bottom:6px;
+    color:var(--oxblood);
+  }
+  .part-divider{grid-template-columns:1fr;gap:12px;padding-top:64px}
+  .part-divider .gutter{color:var(--oxblood)}
+  .hero{padding:48px 0 36px}
+  .sec-title{font-size:26px}
+  .metricstack .met{grid-template-columns:1fr;gap:14px}
+  .qstack .qrow{grid-template-columns:48px 1fr;gap:14px}
+  .qstack .qnum{font-size:36px}
+  .layer{grid-template-columns:1fr}
+  .layer .ladge{display:flex;align-items:baseline;gap:12px}
+  .layer .ladge .lnum{font-size:32px;margin-bottom:0}
+  .pullquote{padding:22px 22px;font-size:18px}
+  .pullquote::before{left:22px}
+  .codeblock{padding:18px 18px;font-size:11.5px}
+}
+@media print{
+  body{background:#fff}
+  body::before{display:none}
+  aside.toc,.mobile-bar{display:none}
+  .shell{display:block}
+  section.block{break-inside:avoid;page-break-inside:avoid;border-bottom:1px solid #888}
+  .codeblock{background:#fff;color:#000;border-left:2px solid #000}
+  .codeblock::before{background:#000}
+  .status-banner .head{background:#000}
+}
+
+/* Reveal */
+.reveal{opacity:0;transform:translateY(8px);transition:opacity 0.6s ease, transform 0.6s ease}
+.reveal.in{opacity:1;transform:translateY(0)}
+</style>
 </head>
 <body>
-  <div class="mobile-top">
-    <div>
-      <p class="text-xs font-black uppercase tracking-[0.22em] text-[#526b5a]">Capstone</p>
-      <p class="display text-xl">Progress Update 1</p>
+
+<div class="mobile-bar">
+  <div class="mt">Progress Update</div>
+  <button class="mb" id="mtoggle">Index</button>
+</div>
+<nav class="mobile-menu" id="mmenu"></nav>
+
+<div class="shell">
+
+  <!-- ─────────── SIDEBAR ─────────── -->
+  <aside class="toc">
+    <div class="brand">
+      <div class="crest" aria-hidden="true"></div>
+      <div class="meta">HKU · MSc Capstone<br/>COMP7705</div>
+      <h1>Progress<br/><em>Update</em></h1>
+      <div class="sub">Deception-in-Depth Honeynet Architecture for Multi-Layer Cyber Deception</div>
     </div>
-    <button id="menuToggle" class="rounded-2xl bg-[#13211f] px-4 py-3 text-white" aria-label="Open navigation">
-      <i class="fa-solid fa-bars"></i>
-    </button>
-  </div>
 
-  <div id="mobileMenu" class="mobile-menu">
-    <a class="nav-link" href="#overview"><i class="fa-solid fa-seedling"></i> Overview</a>
-    <a class="nav-link" href="#questions"><i class="fa-solid fa-circle-question"></i> Research Questions</a>
-    <a class="nav-link" href="#literature"><i class="fa-solid fa-book-open"></i> Literature Review</a>
-    <a class="nav-link" href="#synthesis"><i class="fa-solid fa-diagram-project"></i> Key Synthesis</a>
-    <a class="nav-link" href="#requirements"><i class="fa-solid fa-list-check"></i> Design Requirements</a>
-    <a class="nav-link" href="#architecture"><i class="fa-solid fa-layer-group"></i> Architecture Design</a>
-    <a class="nav-link" href="#telemetry"><i class="fa-solid fa-chart-network"></i> Telemetry</a>
-    <a class="nav-link" href="#experiment"><i class="fa-solid fa-flask"></i> Experiment Scope</a>
-    <a class="nav-link" href="#contribution"><i class="fa-solid fa-bullseye"></i> Contribution</a>
-  </div>
+    <div class="toc-title">Contents</div>
 
-  <div class="layout">
-    <aside class="sidebar">
-      <div class="mb-8">
-        <div class="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#13211f] text-white shadow-lg">
-          <i class="fa-solid fa-shield-halved"></i>
+    <div class="toc-group">
+      <div class="glabel">Part I</div>
+      <div class="gtitle">Literature Review</div>
+      <ol class="toc-list">
+        <li><a href="#themes"><span class="num">1.1</span><span class="label">Themes Reviewed</span></a></li>
+        <li><a href="#findings"><span class="num">1.2</span><span class="label">Established Findings</span></a></li>
+        <li><a href="#gap"><span class="num">1.3</span><span class="label">Core Gap</span></a></li>
+        <li><a href="#evidence"><span class="num">1.4</span><span class="label">Evidence Matrix</span></a></li>
+        <li><a href="#questions"><span class="num">1.5</span><span class="label">Research Questions</span></a></li>
+      </ol>
+    </div>
+
+    <div class="toc-group">
+      <div class="glabel">Part II</div>
+      <div class="gtitle">Architecture Design</div>
+      <ol class="toc-list">
+        <li><a href="#principles"><span class="num">2.1</span><span class="label">Design Principles</span></a></li>
+        <li><a href="#architecture"><span class="num">2.2</span><span class="label">Layered Architecture</span></a></li>
+        <li><a href="#calibration"><span class="num">2.3</span><span class="label">Realism vs. Lure</span></a></li>
+        <li><a href="#attack"><span class="num">2.4</span><span class="label">MITRE ATT&amp;CK Coverage</span></a></li>
+        <li><a href="#antipatterns"><span class="num">2.5</span><span class="label">Anti-Patterns Avoided</span></a></li>
+        <li><a href="#telemetry"><span class="num">2.6</span><span class="label">Observability &amp; Schema</span></a></li>
+        <li><a href="#measurement"><span class="num">2.7</span><span class="label">Measurement Framework</span></a></li>
+        <li><a href="#sessions"><span class="num">2.8</span><span class="label">Sample Session Telemetry</span></a></li>
+      </ol>
+    </div>
+
+    <div class="toc-group">
+      <div class="glabel">Part III</div>
+      <div class="gtitle">Environment Set Up</div>
+      <ol class="toc-list">
+        <li><a href="#substrate"><span class="num">3.1</span><span class="label">Hypervisor Substrate</span></a></li>
+        <li><a href="#mgmtplane"><span class="num">3.2</span><span class="label">Management Plane</span></a></li>
+        <li><a href="#docs"><span class="num">3.3</span><span class="label">Operational Handbook</span></a></li>
+        <li><a href="#sensor"><span class="num">3.4</span><span class="label">Sensor Evaluation</span></a></li>
+        <li><a href="#readiness"><span class="num">3.5</span><span class="label">Component Readiness</span></a></li>
+        <li><a href="#considerations"><span class="num">3.6</span><span class="label">Outstanding Considerations</span></a></li>
+        <li><a href="#trajectory"><span class="num">3.7</span><span class="label">Forward Trajectory</span></a></li>
+      </ol>
+    </div>
+
+    <div class="toc-foot">
+      <div class="row"><span>Cycle</span><span class="ok">●&nbsp;Delivered</span></div>
+      <div class="row"><span>Stage</span><span>Build &amp; Tune</span></div>
+      <div class="row"><span>Document</span><span>Update</span></div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="page">
+
+      <!-- ─────────── HERO ─────────── -->
+      <header class="hero">
+        <div class="eyebrow">HKU MSc · COMP7705 · Capstone Project</div>
+        <h1>Progress <em>Update</em>.</h1>
+        <div class="subtitle">Deception-in-Depth Honeynet Architecture<br/>for Multi-Layer Cyber Deception</div>
+
+        <div class="meta-strip">
+          <span><strong>Domain</strong> · Cyber Deception</span>
+          <span><strong>Layers</strong> · 3</span>
+          <span><strong>Stack</strong> · Proxmox · T-Pot · GOAD · HoneyLambda</span>
+          <span><strong>Mapping</strong> · MITRE ATT&amp;CK</span>
         </div>
-        <p class="text-xs font-black uppercase tracking-[0.24em] text-[#526b5a]">Capstone Project</p>
-        <h1 class="display mt-2 text-4xl leading-none">Progress Update 1</h1>
-        <p class="mt-4 text-sm leading-6 text-slate-600">Literature review and architecture design for a Deception-in-Depth honeynet.</p>
+
+        <p class="abstract">
+          This update reports the project's transition from <strong>conceptual planning</strong> into <strong>active architectural validation and infrastructure deployment</strong>. Three milestones have been delivered in this cycle — a literature review that frames the research problem, a layered architecture design with measurement framework, and a working environment substrate ready to host the deception layers. The remainder of this document expands each milestone in detail.
+        </p>
+
+        <!-- Cycle status banner -->
+        <div class="status-banner">
+          <div class="head">
+            <span class="pill">✓ Cycle Delivered</span>
+            <span>Three Milestones · This Reporting Cycle</span>
+          </div>
+          <div class="body">
+            <div class="item">
+              <div class="check">✓</div>
+              <div class="stage">Milestone · 01</div>
+              <h3>Literature Review</h3>
+              <p>Synthesised honeypot taxonomy, adaptive deception, host/AD &amp; honeytoken work, and ATT&amp;CK alignment. Identified the core evaluation gap that motivates the project.</p>
+            </div>
+            <div class="item">
+              <div class="check">✓</div>
+              <div class="stage">Milestone · 02</div>
+              <h3>Architecture Design</h3>
+              <p>Defined a three-layer deception model — network, host/AD, data/cloud — with design principles, ATT&amp;CK-mapped coverage, anti-patterns, observable event schema, and a session-based measurement framework.</p>
+            </div>
+            <div class="item">
+              <div class="check">✓</div>
+              <div class="stage">Milestone · 03</div>
+              <h3>Environment Set Up</h3>
+              <p>Established the foundational substrate: Proxmox VE hypervisor, virtual networking, snapshot strategy, encrypted Tailscale management plane, and a structured Notion operational handbook.</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- ════════════════════════════════════════════════════════ -->
+      <!-- ─────────── PART I — LITERATURE REVIEW ─────────── -->
+      <!-- ════════════════════════════════════════════════════════ -->
+      <div class="part-divider">
+        <div class="gutter">Part&nbsp;·&nbsp;01</div>
+        <div class="pcontent">
+          <div class="pmark">Part I <span class="pchip">Completed</span></div>
+          <h2>Literature <em>Review</em>.</h2>
+          <p class="pintro">A targeted survey of honeypot taxonomy, adaptive cyber deception, host and Active Directory deception, honeytokens, and MITRE ATT&amp;CK / D3FEND mapping. The review's purpose is not encyclopaedic — it is to <strong>extract the gap that the project's architecture is designed to close</strong>.</p>
+          <div class="deliverables">
+            <span>✓ Themes mapped</span>
+            <span>✓ Findings synthesised</span>
+            <span>✓ Gap identified</span>
+            <span>✓ Evidence-to-design matrix</span>
+            <span>✓ Research questions crystallised</span>
+          </div>
+        </div>
       </div>
 
-      <nav class="space-y-1">
-        <a class="nav-link active" href="#overview"><i class="fa-solid fa-seedling"></i> Overview</a>
-        <a class="nav-link" href="#questions"><i class="fa-solid fa-circle-question"></i> Research Questions</a>
-        <a class="nav-link" href="#literature"><i class="fa-solid fa-book-open"></i> Literature Review</a>
-        <a class="nav-link" href="#synthesis"><i class="fa-solid fa-diagram-project"></i> Key Synthesis</a>
-        <a class="nav-link" href="#requirements"><i class="fa-solid fa-list-check"></i> Design Requirements</a>
-        <a class="nav-link" href="#architecture"><i class="fa-solid fa-layer-group"></i> Architecture Design</a>
-        <a class="nav-link" href="#telemetry"><i class="fa-solid fa-chart-network"></i> Telemetry</a>
-        <a class="nav-link" href="#experiment"><i class="fa-solid fa-flask"></i> Experiment Scope</a>
-        <a class="nav-link" href="#contribution"><i class="fa-solid fa-bullseye"></i> Contribution</a>
-      </nav>
+      <!-- §1.1 Themes -->
+      <section class="block" id="themes">
+        <div class="gutter">§ 1.1 — Themes</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§1.1</span><span class="sec-eyebrow">Themes Reviewed</span></div>
+          <h2 class="sec-title">Eight strands of the literature, traced for what they imply about <em>layered</em> deception.</h2>
+          <p class="sec-lede">Each strand was read with one filter: <strong>does this give us a credible reason to extend an environment past the first sensor?</strong> Strands that only described detection were tagged but not weighted; strands describing post-compromise observability and behavioural evaluation were treated as load-bearing.</p>
+          <div class="themes">
+            <span>Honeypot &amp; honeynet taxonomy</span>
+            <span>Adaptive cyber deception</span>
+            <span>Military deception principles</span>
+            <span>Host &amp; Active Directory deception</span>
+            <span>Honeytokens &amp; decoy data</span>
+            <span>MITRE ATT&amp;CK / D3FEND mapping</span>
+            <span>Attacker decision-making</span>
+            <span>Behavioural evaluation of deception</span>
+          </div>
+        </div>
+      </section>
 
-      <div class="mt-8 rounded-3xl bg-white/58 p-5">
-        <p class="text-sm font-black text-[#13211f]">Update Focus</p>
-        <div class="mt-4 space-y-3 text-sm leading-6 text-slate-600">
-          <p><strong>1.</strong> Literature review: why single-layer honeypots are insufficient.</p>
-          <p><strong>2.</strong> Architecture design: how layered deception supports observation.</p>
+      <!-- §1.2 Findings -->
+      <section class="block" id="findings">
+        <div class="gutter">§ 1.2 — Findings</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§1.2</span><span class="sec-eyebrow">Established Findings</span></div>
+          <h2 class="sec-title">Three convergent observations across the surveyed work.</h2>
+          <p class="sec-lede">The reviewed literature does not always agree on <em>technique</em>, but it converges on three observations about <em>where deception research currently stops</em>. Those three observations are the load-bearing premise of this project's design.</p>
+
+          <div class="findings">
+            <div class="f">
+              <div class="label">Finding · 01</div>
+              <h4>Single-layer <em>blindness</em></h4>
+              <p>Conventional low- and high-interaction honeypots capture scanning, brute-force, and initial exploitation well — but are structurally weak at observing lateral movement, credential harvesting, collection, and exfiltration.</p>
+            </div>
+            <div class="f">
+              <div class="label">Finding · 02</div>
+              <h4>Environmental <em>continuity</em></h4>
+              <p>Multi-stage observation requires plausible continuation paths. Attackers must encounter a believable progression from exposed services to internal hosts to high-value data or cloud resources.</p>
+            </div>
+            <div class="f">
+              <div class="label">Finding · 03</div>
+              <h4>Behavioural <em>evaluation</em></h4>
+              <p>The field is shifting from detection-only metrics toward behavioural measures — misdirection, delay, engagement depth, path expansion, tactic-level observation — that better describe what deception actually changes.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- §1.3 Gap -->
+      <section class="block" id="gap">
+        <div class="gutter">§ 1.3 — Gap</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§1.3</span><span class="sec-eyebrow">Core Literature Gap</span></div>
+          <h2 class="sec-title">Existing work names the gap; few studies close it under controlled conditions.</h2>
+          <p class="sec-lede">Across the surveyed corpus, deception techniques, adaptive honeynets, and defensive frameworks are well-discussed in isolation. What remains underdeveloped is <strong>controlled, integrated evaluation of how layered deception changes attacker navigation across network, host, and data/cloud stages</strong>.</p>
+
+          <div class="pullquote" data-label="Gap, in one line">
+            How does <em>layered</em> deception measurably change attacker behaviour, and what evidence — beyond alert volume — should defenders look at to know?
+          </div>
+
+          <div class="aside-note">
+            <h5>Project's response to the gap</h5>
+            Design an integrated three-layer deception environment that makes attacker paths <strong>observable, comparable, and measurable</strong>. The architectural and measurement work in Part II is the operationalisation of this response.
+          </div>
+        </div>
+      </section>
+
+      <!-- §1.4 Evidence Matrix -->
+      <section class="block" id="evidence">
+        <div class="gutter">§ 1.4 — Matrix</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§1.4</span><span class="sec-eyebrow">Literature → Design · Evidence Matrix</span></div>
+          <h2 class="sec-title">Every architectural commitment traces back to a row in this matrix.</h2>
+          <p class="sec-lede">The matrix is the load-bearing seam between literature and architecture. If a row's finding turns out to be wrong, the corresponding architectural commitment is wrong. This makes the design defensible on first principles rather than on novelty alone.</p>
+
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>Literature Area</th>
+                  <th>Key Finding</th>
+                  <th>Design Implication</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Traditional honeypots</td>
+                  <td>Capture scanning, brute-force, and initial exploitation; rarely sustain post-compromise behaviour because the environment ends at the sensor edge.</td>
+                  <td>Architecture cannot be a single exposed surface — believable follow-on systems must sit behind it.</td>
+                </tr>
+                <tr>
+                  <td>Adaptive deception</td>
+                  <td>Deception is more convincing when the environment <em>responds</em> to observed actions rather than exposing every lure simultaneously.</td>
+                  <td>Adopt <em>progressive revelation</em>: deeper layers become visible only after meaningful interaction with shallower ones.</td>
+                </tr>
+                <tr>
+                  <td>Host / AD deception</td>
+                  <td>Internal identity and credentials are central to modern lateral movement decisions — attackers reason against the directory, not the network.</td>
+                  <td>Layer 2 includes a real Active Directory (GOAD), decoy accounts, planted credentials, and honeyfiles — not just additional Linux hosts.</td>
+                </tr>
+                <tr>
+                  <td>Honeytokens &amp; data lures</td>
+                  <td>Tokens and decoy files are most informative when uniquely attributable and tied to plausible attacker goals.</td>
+                  <td>Cloud keys, honeyfiles, decoy storage are tagged with <em>artifact IDs</em> so usage reconstructs attacker intent.</td>
+                </tr>
+                <tr>
+                  <td>MITRE ATT&amp;CK / D3FEND</td>
+                  <td>Standard frameworks supply a vocabulary connecting observed actions to tactics and defensive deception techniques.</td>
+                  <td>All telemetry is tagged with tactic codes; metric framework is reported per ATT&amp;CK family.</td>
+                </tr>
+                <tr>
+                  <td>Behavioural evaluation</td>
+                  <td>Detection-rate alone cannot demonstrate behaviour change; the field is shifting toward path-level metrics.</td>
+                  <td>Measurement framework is built around <em>misdirection, delay, engagement</em> rather than alert volume.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- §1.5 Research Questions -->
+      <section class="block" id="questions">
+        <div class="gutter">§ 1.5 — Questions</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§1.5</span><span class="sec-eyebrow">Research Questions Crystallised</span></div>
+          <h2 class="sec-title">Three falsifiable questions, each tied to one observable.</h2>
+          <p class="sec-lede">The literature work converges into three sub-questions, each terminating in an observable that the architecture (Part II) is engineered to surface. Each question is falsifiable on its own.</p>
+
+          <div class="qstack">
+            <div class="qrow">
+              <div class="qnum">i.</div>
+              <div class="qbody">
+                <div class="tag">RQ 1 — Navigation</div>
+                <h3>How does <em>layered</em> deception influence attacker navigation across the environment?</h3>
+                <p>Whether attackers follow paths created by deceptive services, planted credentials, decoy hosts, honeyfiles, and cloud references — and whether those paths look meaningfully different from a flat sensor's exhaust. Observable: per-session path traces.</p>
+              </div>
+            </div>
+            <div class="qrow">
+              <div class="qnum">ii.</div>
+              <div class="qbody">
+                <div class="tag">RQ 2 — Decision</div>
+                <h3>Which deception <em>artifacts</em> measurably affect attacker choices?</h3>
+                <p>The design treats credentials, honeyfiles, fake accounts, cloud keys, and service banners as probes. Their differential pickup rate signals what attackers believed valuable, reachable, or trustworthy. Observable: artifact pickup rates by category.</p>
+              </div>
+            </div>
+            <div class="qrow">
+              <div class="qnum">iii.</div>
+              <div class="qbody">
+                <div class="tag">RQ 3 — Engagement</div>
+                <h3>Can <em>staged</em> layers increase meaningful engagement beyond initial access?</h3>
+                <p>Whether progressive exposure encourages attackers to move from network reconnaissance into host enumeration, credential harvesting, and data/cloud-oriented behaviour. Observable: layer-progression depth + tactic diversity.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="pullquote" data-label="Working Hypothesis">
+            Layered deception should expose richer attacker behaviour than isolated honeypots —<br/>
+            and that <em>richness</em> must be measurable as path expansion, dwell, and tactic coverage.
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════ -->
+      <!-- ─────────── PART II — ARCHITECTURE DESIGN ─────────── -->
+      <!-- ════════════════════════════════════════════════════════ -->
+      <div class="part-divider">
+        <div class="gutter">Part&nbsp;·&nbsp;02</div>
+        <div class="pcontent">
+          <div class="pmark">Part II <span class="pchip">Completed</span></div>
+          <h2>Architecture <em>Design</em>.</h2>
+          <p class="pintro">A three-layer honeynet — network, host/AD, data/cloud — built around four design principles, mapped to MITRE ATT&amp;CK, instrumented through a normalised event schema, and evaluated through a <strong>session-based measurement framework</strong> that operationalises misdirection, delay, and engagement.</p>
+          <div class="deliverables">
+            <span>✓ Four design principles</span>
+            <span>✓ Three layers specified</span>
+            <span>✓ Realism/lure calibration</span>
+            <span>✓ ATT&amp;CK coverage matrix</span>
+            <span>✓ Anti-patterns avoided</span>
+            <span>✓ Event schema defined</span>
+            <span>✓ Measurement framework</span>
+          </div>
         </div>
       </div>
-    </aside>
 
-    <main>
-      <section id="overview" class="section pt-10 lg:pt-12">
-        <div class="section-inner">
-          <div class="glass overflow-hidden rounded-[36px]">
-            <div class="grid lg:grid-cols-[1.05fr_0.95fr]">
-              <div class="p-8 lg:p-12">
-                <span class="tag"><i class="fa-solid fa-circle-nodes"></i> Deception-in-Depth Honeynet</span>
-                <h2 class="display mt-7 max-w-3xl text-5xl leading-[0.96] lg:text-7xl">Progress Update 1</h2>
-                <p class="mt-6 max-w-2xl text-xl leading-9 text-slate-650">
-                  This update presents the conceptual foundation and system design for a layered honeynet architecture that can observe attacker behaviour beyond initial compromise.
-                </p>
-                <div class="mt-8 grid gap-4 md:grid-cols-2">
-                  <div class="soft-card rounded-3xl p-5">
-                    <i class="fa-solid fa-book-open text-2xl text-[#8f4f2f]"></i>
-                    <h3 class="mt-4 text-xl font-black">Literature Review</h3>
-                    <p class="mt-2 text-sm leading-6 text-slate-600">Synthesizes honeypot limitations, cyber deception principles, layered architectures, MITRE ATT&CK alignment, and evaluation gaps.</p>
-                  </div>
-                  <div class="soft-card rounded-3xl p-5">
-                    <i class="fa-solid fa-drafting-compass text-2xl text-[#526b5a]"></i>
-                    <h3 class="mt-4 text-xl font-black">Architecture Design</h3>
-                    <p class="mt-2 text-sm leading-6 text-slate-600">Defines a network, host/AD, and data/cloud deception model with staged activation and cross-layer telemetry.</p>
-                  </div>
-                </div>
-              </div>
-              <div class="hero-visual relative">
-                <div class="absolute inset-0 bg-gradient-to-br from-[#13211f]/30 via-transparent to-[#8f4f2f]/35"></div>
-                <div class="absolute bottom-6 left-6 right-6 grid gap-3 sm:grid-cols-3">
-                  <div class="hero-chip rounded-3xl p-4 text-white">
-                    <p class="text-xs font-black uppercase tracking-[0.16em] text-white/60">Metric</p>
-                    <p class="mt-2 font-black">Misdirection</p>
-                  </div>
-                  <div class="hero-chip rounded-3xl p-4 text-white">
-                    <p class="text-xs font-black uppercase tracking-[0.16em] text-white/60">Metric</p>
-                    <p class="mt-2 font-black">Delay</p>
-                  </div>
-                  <div class="hero-chip rounded-3xl p-4 text-white">
-                    <p class="text-xs font-black uppercase tracking-[0.16em] text-white/60">Metric</p>
-                    <p class="mt-2 font-black">Engagement</p>
-                  </div>
-                </div>
-              </div>
+      <!-- §2.1 Principles -->
+      <section class="block" id="principles">
+        <div class="gutter">§ 2.1 — Principles</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§2.1</span><span class="sec-eyebrow">Design Principles</span></div>
+          <h2 class="sec-title">Four commitments that hold across every layer.</h2>
+          <p class="sec-lede">These four principles are not aspirational — they are <strong>filters</strong>. Any proposed component, lure, credential, or service must be defensible against all four before being introduced into the environment.</p>
+
+          <div class="principles">
+            <div class="p">
+              <span class="n">P · 01</span>
+              <h4>Plausibility over <em>Perfection</em></h4>
+              <p>The environment is judged by whether attackers continue, not by whether it is indistinguishable from a real enterprise. Believability is sufficient; perfection is wasteful.</p>
+            </div>
+            <div class="p">
+              <span class="n">P · 02</span>
+              <h4>Progressive <em>Friction</em></h4>
+              <p>Each layer surfaces only after demonstrated interest in the previous one. Total exposure flattens engagement and tells attackers the environment is a sensor, not a system.</p>
+            </div>
+            <div class="p">
+              <span class="n">P · 03</span>
+              <h4>Observable by <em>Default</em></h4>
+              <p>Any artifact that cannot be logged with a unique identifier does not enter the environment. Unobservable deception is not defensible.</p>
+            </div>
+            <div class="p">
+              <span class="n">P · 04</span>
+              <h4>Safe <em>Containment</em></h4>
+              <p>No real credentials, no real production trust, no live outbound exfiltration paths. Realism is bounded by an explicit ethical and operational boundary.</p>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="questions" class="section">
-        <div class="section-inner">
-          <div class="split-title mb-9">
-            <div>
-              <p class="text-sm font-black uppercase tracking-[0.24em] text-[#8f4f2f]">Research Framing</p>
-              <h2 class="display mt-3 text-4xl leading-tight lg:text-6xl">Questions Guiding the Project</h2>
-            </div>
-            <p class="text-lg leading-8 text-slate-600">
-              The first update turns the project from a broad cyber deception idea into a focused research problem: how can a layered honeynet make attacker decision-making observable?
-            </p>
+      <!-- §2.2 Layered Architecture -->
+      <section class="block" id="architecture">
+        <div class="gutter">§ 2.2 — Architecture</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§2.2</span><span class="sec-eyebrow">Layered Architecture</span></div>
+          <h2 class="sec-title">Three layers, each tuned to one phase of the attack lifecycle.</h2>
+          <p class="sec-lede">Layers are not isolated honeypots clustered together — they form a <strong>continuation pipeline</strong>, with planted credentials and references threading the attacker from one layer to the next.</p>
+
+          <div class="schematic">
+            <span class="lbl">Schematic · Continuation Pipeline</span>
+            <svg viewBox="0 0 920 380" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 Z" fill="#1A1714"/>
+                </marker>
+                <marker id="arrred" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M0,0 L10,5 L0,10 Z" fill="#8B2E1F"/>
+                </marker>
+                <pattern id="dotpat" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
+                  <circle cx="1" cy="1" r="0.55" fill="#C7BCA0"/>
+                </pattern>
+              </defs>
+
+              <text x="20" y="22" font-family="JetBrains Mono" font-size="10" letter-spacing="2.2" fill="#6B6359">ATTACKER  ──▶  L1 NETWORK  ──▶  L2 HOST/AD  ──▶  L3 DATA/CLOUD  ──▶  TELEMETRY</text>
+
+              <!-- attacker -->
+              <circle cx="46" cy="190" r="22" fill="none" stroke="#1A1714" stroke-width="1.4"/>
+              <text x="46" y="194" text-anchor="middle" font-family="Newsreader" font-style="italic" font-size="14" fill="#1A1714">A</text>
+              <text x="46" y="232" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#6B6359" letter-spacing="1.5">ATTACKER</text>
+              <line x1="68" y1="190" x2="103" y2="190" stroke="#1A1714" stroke-width="1.2" marker-end="url(#arr)"/>
+
+              <!-- L1 -->
+              <rect x="105" y="80" width="210" height="220" fill="#F2ECDE" stroke="#8B2E1F" stroke-width="1.5"/>
+              <rect x="105" y="80" width="210" height="22" fill="#8B2E1F"/>
+              <text x="116" y="96" font-family="JetBrains Mono" font-size="10" fill="#F2ECDE" letter-spacing="2">L · 01  NETWORK</text>
+              <text x="120" y="128" font-family="Newsreader" font-style="italic" font-size="18" fill="#1A1714">External surface</text>
+              <text x="120" y="148" font-family="IBM Plex Sans" font-size="10.5" fill="#6B6359">T-Pot CE · SSH · HTTP · SMB</text>
+              <text x="120" y="164" font-family="IBM Plex Sans" font-size="10.5" fill="#6B6359">Crafted banners · weak creds</text>
+              <line x1="120" y1="180" x2="300" y2="180" stroke="#C7BCA0" stroke-dasharray="2 3"/>
+              <text x="120" y="200" font-family="JetBrains Mono" font-size="9" fill="#8B2E1F" letter-spacing="1.2">TA0043  RECONNAISSANCE</text>
+              <text x="120" y="216" font-family="JetBrains Mono" font-size="9" fill="#8B2E1F" letter-spacing="1.2">TA0006  CREDENTIAL ACCESS</text>
+              <text x="120" y="232" font-family="JetBrains Mono" font-size="9" fill="#8B2E1F" letter-spacing="1.2">TA0001  INITIAL ACCESS</text>
+              <text x="120" y="278" font-family="IBM Plex Sans" font-size="10" fill="#1A1714" font-weight="500">→ planted creds bridge to L2</text>
+              <line x1="315" y1="190" x2="343" y2="190" stroke="#1A1714" stroke-width="1.2" marker-end="url(#arr)"/>
+
+              <!-- L2 -->
+              <rect x="345" y="80" width="210" height="220" fill="#F2ECDE" stroke="#26465A" stroke-width="1.5"/>
+              <rect x="345" y="80" width="210" height="22" fill="#26465A"/>
+              <text x="356" y="96" font-family="JetBrains Mono" font-size="10" fill="#F2ECDE" letter-spacing="2">L · 02  HOST / AD</text>
+              <text x="360" y="128" font-family="Newsreader" font-style="italic" font-size="18" fill="#1A1714">Internal enterprise</text>
+              <text x="360" y="148" font-family="IBM Plex Sans" font-size="10.5" fill="#6B6359">GOAD · DC01 · WS01 · FS01</text>
+              <text x="360" y="164" font-family="IBM Plex Sans" font-size="10.5" fill="#6B6359">Decoy accounts · honeyfiles</text>
+              <line x1="360" y1="180" x2="540" y2="180" stroke="#C7BCA0" stroke-dasharray="2 3"/>
+              <text x="360" y="200" font-family="JetBrains Mono" font-size="9" fill="#26465A" letter-spacing="1.2">TA0004  PRIV ESCALATION</text>
+              <text x="360" y="216" font-family="JetBrains Mono" font-size="9" fill="#26465A" letter-spacing="1.2">TA0008  LATERAL MOVEMENT</text>
+              <text x="360" y="232" font-family="JetBrains Mono" font-size="9" fill="#26465A" letter-spacing="1.2">TA0003  PERSISTENCE</text>
+              <text x="360" y="278" font-family="IBM Plex Sans" font-size="10" fill="#1A1714" font-weight="500">→ harvested keys bridge to L3</text>
+              <line x1="555" y1="190" x2="583" y2="190" stroke="#1A1714" stroke-width="1.2" marker-end="url(#arr)"/>
+
+              <!-- L3 -->
+              <rect x="585" y="80" width="210" height="220" fill="#F2ECDE" stroke="#3D5642" stroke-width="1.5"/>
+              <rect x="585" y="80" width="210" height="22" fill="#3D5642"/>
+              <text x="596" y="96" font-family="JetBrains Mono" font-size="10" fill="#F2ECDE" letter-spacing="2">L · 03  DATA / CLOUD</text>
+              <text x="600" y="128" font-family="Newsreader" font-style="italic" font-size="18" fill="#1A1714">High-value lures</text>
+              <text x="600" y="148" font-family="IBM Plex Sans" font-size="10.5" fill="#6B6359">HoneyLambda · decoy S3</text>
+              <text x="600" y="164" font-family="IBM Plex Sans" font-size="10.5" fill="#6B6359">Fake API keys · honeyfiles</text>
+              <line x1="600" y1="180" x2="780" y2="180" stroke="#C7BCA0" stroke-dasharray="2 3"/>
+              <text x="600" y="200" font-family="JetBrains Mono" font-size="9" fill="#3D5642" letter-spacing="1.2">TA0009  COLLECTION</text>
+              <text x="600" y="216" font-family="JetBrains Mono" font-size="9" fill="#3D5642" letter-spacing="1.2">TA0010  EXFILTRATION</text>
+              <text x="600" y="232" font-family="JetBrains Mono" font-size="9" fill="#3D5642" letter-spacing="1.2">TA0005  DEFENSE EVASION</text>
+              <text x="600" y="278" font-family="IBM Plex Sans" font-size="10" fill="#1A1714" font-weight="500">→ all activity logged out</text>
+
+              <!-- Telemetry bar -->
+              <rect x="105" y="325" width="690" height="38" fill="url(#dotpat)" stroke="#1A1714" stroke-width="1.2"/>
+              <text x="115" y="348" font-family="JetBrains Mono" font-size="10" fill="#1A1714" letter-spacing="2">CENTRAL TELEMETRY  /  SCHEMA NORMALISATION  /  ARTIFACT-ID JOIN  /  SESSION RECONSTRUCTION</text>
+
+              <!-- Down arrows -->
+              <line x1="210" y1="300" x2="210" y2="324" stroke="#8B2E1F" stroke-width="1.2" marker-end="url(#arrred)"/>
+              <line x1="450" y1="300" x2="450" y2="324" stroke="#26465A" stroke-width="1.2" marker-end="url(#arrred)"/>
+              <line x1="690" y1="300" x2="690" y2="324" stroke="#3D5642" stroke-width="1.2" marker-end="url(#arrred)"/>
+
+              <!-- Output labels -->
+              <text x="810" y="186" font-family="Newsreader" font-style="italic" font-size="13" fill="#8B2E1F">misdirection</text>
+              <text x="810" y="204" font-family="Newsreader" font-style="italic" font-size="13" fill="#26465A">delay</text>
+              <text x="810" y="222" font-family="Newsreader" font-style="italic" font-size="13" fill="#3D5642">engagement</text>
+              <line x1="797" y1="190" x2="805" y2="190" stroke="#1A1714"/>
+              <line x1="805" y1="180" x2="805" y2="222" stroke="#1A1714"/>
+            </svg>
           </div>
 
-          <div class="grid gap-5 lg:grid-cols-3">
-            <article class="question-card soft-card rounded-3xl p-6" data-number="01">
-              <span class="tag"><i class="fa-solid fa-route"></i> Navigation</span>
-              <h3 class="relative mt-5 text-2xl font-black">How does layered deception influence attacker navigation?</h3>
-              <p class="relative mt-3 leading-7 text-slate-600">This question focuses on whether attackers follow the paths created by deceptive services, credentials, hosts, files, and cloud references.</p>
-            </article>
-            <article class="question-card soft-card rounded-3xl p-6" data-number="02">
-              <span class="tag"><i class="fa-solid fa-hand-pointer"></i> Decisions</span>
-              <h3 class="relative mt-5 text-2xl font-black">Which deception artifacts affect attacker choices?</h3>
-              <p class="relative mt-3 leading-7 text-slate-600">The design treats credentials, honeyfiles, fake accounts, and cloud tokens as probes that reveal attacker priorities and assumptions.</p>
-            </article>
-            <article class="question-card soft-card rounded-3xl p-6" data-number="03">
-              <span class="tag"><i class="fa-solid fa-layer-group"></i> Depth</span>
-              <h3 class="relative mt-5 text-2xl font-black">Can staged layers increase meaningful engagement?</h3>
-              <p class="relative mt-3 leading-7 text-slate-600">The project evaluates whether progressive exposure encourages attackers to move beyond initial access into host and data-oriented behaviour.</p>
-            </article>
-          </div>
-
-          <div class="mt-7 glass rounded-[34px] p-6 lg:p-8">
-            <div class="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
-              <div>
-                <span class="tag"><i class="fa-solid fa-lightbulb"></i> Working Hypothesis</span>
-                <h3 class="display mt-4 text-4xl leading-tight">Layered deception should reveal richer attacker behaviour than isolated honeypots.</h3>
+          <div class="layers">
+            <div class="layer">
+              <div class="ladge"><span class="lnum">01</span>Layer One</div>
+              <div class="lbody">
+                <div class="sub">Reconnaissance · Initial Access</div>
+                <h3>Network <em>Deception</em></h3>
+                <p>The attacker-facing surface. Plausible service banners, exposed ports, and seeded credentials create the first believable contact and capture scanning, banner interpretation, exploit selection, and credential attempts. The layer is intentionally <em>not</em> the entire system — its lures point inward.</p>
+                <dl class="kvgrid">
+                  <dt>Components</dt><dd>T-Pot CE · SSH / RDP / HTTP(S) / SMB / FTP exposure · simulated subnets</dd>
+                  <dt>Realism</dt><dd>Mixed banners, weak credentials on selected services, minor misconfigurations</dd>
+                  <dt>Expected</dt><dd>Scanning, brute-force, opportunistic exploitation, banner-driven targeting</dd>
+                </dl>
               </div>
-              <div class="grid gap-4 sm:grid-cols-3">
-                <div class="rounded-3xl bg-white/70 p-5">
-                  <h4 class="font-black">Path Influence</h4>
-                  <p class="mt-2 text-sm leading-6 text-slate-600">Attackers interact with decoy-induced paths that would not exist in a flat sensor.</p>
-                </div>
-                <div class="rounded-3xl bg-white/70 p-5">
-                  <h4 class="font-black">Decision Evidence</h4>
-                  <p class="mt-2 text-sm leading-6 text-slate-600">Artifact use shows what the attacker believed to be valuable or reachable.</p>
-                </div>
-                <div class="rounded-3xl bg-white/70 p-5">
-                  <h4 class="font-black">Lifecycle Coverage</h4>
-                  <p class="mt-2 text-sm leading-6 text-slate-600">Observation expands from initial contact to internal movement and data targeting.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="literature" class="section">
-        <div class="section-inner">
-          <div class="split-title mb-9">
-            <div>
-              <p class="text-sm font-black uppercase tracking-[0.24em] text-[#8f4f2f]">Literature Review</p>
-              <h2 class="display mt-3 text-4xl leading-tight lg:text-6xl">What the Literature Establishes</h2>
-            </div>
-            <p class="text-lg leading-8 text-slate-600">
-              The review frames the project as a response to a visibility problem: conventional honeypots are useful sensors, but they rarely sustain the environmental continuity needed to observe multi-stage attacker behaviour.
-            </p>
-          </div>
-
-          <div class="grid gap-5 lg:grid-cols-3">
-            <article class="review-card soft-card rounded-3xl p-6">
-              <span class="tag"><i class="fa-solid fa-eye-slash"></i> Problem</span>
-              <h3 class="mt-5 text-2xl font-black">Single-Layer Blindness</h3>
-              <p class="mt-3 leading-7 text-slate-600">Traditional low- and high-interaction honeypots are strong at capturing reconnaissance, brute-force attempts, and initial exploitation, but they are structurally weak at observing lateral movement, credential harvesting, collection, and exfiltration.</p>
-            </article>
-            <article class="review-card soft-card rounded-3xl p-6">
-              <span class="tag"><i class="fa-solid fa-route"></i> Need</span>
-              <h3 class="mt-5 text-2xl font-black">Environmental Continuity</h3>
-              <p class="mt-3 leading-7 text-slate-600">Multi-stage observation requires plausible continuation paths. Attackers need to encounter a believable progression from exposed services to internal hosts and then to higher-value data or cloud resources.</p>
-            </article>
-            <article class="review-card soft-card rounded-3xl p-6">
-              <span class="tag"><i class="fa-solid fa-brain"></i> Lens</span>
-              <h3 class="mt-5 text-2xl font-black">Behavioural Evaluation</h3>
-              <p class="mt-3 leading-7 text-slate-600">The literature motivates moving beyond detection-only metrics toward behavioural measures such as misdirection, delay, engagement depth, path expansion, and tactic-level observation.</p>
-            </article>
-          </div>
-
-          <div class="mt-7 grid gap-5 lg:grid-cols-2">
-            <div class="soft-card rounded-3xl p-6">
-              <h3 class="text-2xl font-black">Research Themes Reviewed</h3>
-              <div class="mt-5 grid gap-3 sm:grid-cols-2">
-                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Honeypot and honeynet taxonomy</div>
-                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Adaptive cyber deception</div>
-                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Military deception principles</div>
-                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Host and Active Directory deception</div>
-                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Honeytokens and decoy data</div>
-                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">MITRE ATT&CK / D3FEND mapping</div>
-              </div>
-            </div>
-
-            <div class="soft-card rounded-3xl p-6">
-              <h3 class="text-2xl font-black">Core Literature Gap</h3>
-              <p class="mt-4 text-lg leading-8 text-slate-600">
-                Existing work discusses deception techniques, adaptive honeynets, and defensive frameworks, but there is still limited controlled evaluation of how layered deception changes attacker navigation across network, host, and data/cloud stages.
-              </p>
-              <div class="mt-5 rounded-3xl bg-[#13211f] p-5 text-white">
-                <p class="text-sm font-black uppercase tracking-[0.18em] text-white/58">Project response</p>
-                <p class="mt-2 text-xl font-black leading-8">Design an integrated deception environment that makes attacker paths observable, comparable, and measurable.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="mt-7 soft-card rounded-[30px] p-5 lg:p-7">
-            <div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-              <div>
-                <p class="text-sm font-black uppercase tracking-[0.22em] text-[#8f4f2f]">Evidence Matrix</p>
-                <h3 class="display mt-2 text-3xl leading-tight lg:text-4xl">How the Reviewed Work Shapes the Design</h3>
-              </div>
-              <p class="max-w-md text-sm leading-6 text-slate-600">This matrix links literature themes to concrete design decisions so the page reads like a project rationale, not just a list of sources.</p>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="evidence-table">
-                <thead>
-                  <tr>
-                    <th>Literature Area</th>
-                    <th>Key Finding</th>
-                    <th>Design Implication</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="font-black">Traditional Honeypots</td>
-                    <td class="text-slate-600">They capture scanning, brute force, and initial exploitation well, but often stop before post-compromise behaviour becomes visible.</td>
-                    <td class="text-slate-600">The architecture needs more than an exposed service layer; it needs believable follow-on systems.</td>
-                  </tr>
-                  <tr>
-                    <td class="font-black">Adaptive Deception</td>
-                    <td class="text-slate-600">Deception is more convincing when the environment responds to observed attacker actions rather than exposing everything at once.</td>
-                    <td class="text-slate-600">Staged activation is used to reveal deeper assets only after meaningful attacker interaction.</td>
-                  </tr>
-                  <tr>
-                    <td class="font-black">Host / AD Deception</td>
-                    <td class="text-slate-600">Internal identity systems and credentials are central to modern lateral movement decisions.</td>
-                    <td class="text-slate-600">The host layer includes Active Directory, decoy accounts, credential placement, and enterprise-style hosts.</td>
-                  </tr>
-                  <tr>
-                    <td class="font-black">Honeytokens and Data Lures</td>
-                    <td class="text-slate-600">Tokens and decoy files work best when they are uniquely attributable and connected to plausible attacker goals.</td>
-                    <td class="text-slate-600">Cloud keys, honeyfiles, and decoy storage are tagged so their use can reconstruct attacker intent.</td>
-                  </tr>
-                  <tr>
-                    <td class="font-black">MITRE ATT&CK / D3FEND</td>
-                    <td class="text-slate-600">Standard frameworks provide a vocabulary for connecting observed actions to tactics and defensive deception techniques.</td>
-                    <td class="text-slate-600">Telemetry is mapped to tactics such as discovery, credential access, lateral movement, collection, and exfiltration.</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="synthesis" class="section">
-        <div class="section-inner">
-          <div class="glass rounded-[34px] p-6 lg:p-9">
-            <div class="mb-8">
-              <p class="text-sm font-black uppercase tracking-[0.24em] text-[#8f4f2f]">Argumentative Synthesis</p>
-              <h2 class="display mt-3 text-4xl leading-tight lg:text-6xl">Design Logic Derived From the Review</h2>
-            </div>
-
-            <div class="grid gap-5 lg:grid-cols-2">
-              <div class="rounded-3xl bg-white/70 p-6">
-                <h3 class="flex items-center gap-3 text-2xl font-black"><i class="fa-solid fa-link text-[#8f4f2f]"></i> Continuity Before Complexity</h3>
-                <p class="mt-4 leading-7 text-slate-600">The architecture does not simply add more decoys. It links decoys into a plausible enterprise path so that each attacker action can reveal intent, capability, and decision-making.</p>
-              </div>
-              <div class="rounded-3xl bg-white/70 p-6">
-                <h3 class="flex items-center gap-3 text-2xl font-black"><i class="fa-solid fa-gauge-high text-[#526b5a]"></i> Metrics Must Match Deception Goals</h3>
-                <p class="mt-4 leading-7 text-slate-600">Detection rate alone cannot show whether deception changed behaviour. The project therefore emphasizes misdirection, delay, and engagement depth as behavioural outcomes.</p>
-              </div>
-              <div class="rounded-3xl bg-white/70 p-6">
-                <h3 class="flex items-center gap-3 text-2xl font-black"><i class="fa-solid fa-user-secret text-[#8f4f2f]"></i> Attacker Skepticism Matters</h3>
-                <p class="mt-4 leading-7 text-slate-600">Literature on attacker decision-making suggests that deception fidelity and perceived value shape whether attackers continue, disengage, or change tactics.</p>
-              </div>
-              <div class="rounded-3xl bg-white/70 p-6">
-                <h3 class="flex items-center gap-3 text-2xl font-black"><i class="fa-solid fa-tags text-[#526b5a]"></i> Artifacts Need Identity</h3>
-                <p class="mt-4 leading-7 text-slate-600">Decoy credentials, honeyfiles, services, and cloud tokens must be uniquely tagged so interactions can be reconstructed into cross-layer paths.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="requirements" class="section">
-        <div class="section-inner">
-          <div class="split-title mb-9">
-            <div>
-              <p class="text-sm font-black uppercase tracking-[0.24em] text-[#8f4f2f]">Design Requirements</p>
-              <h2 class="display mt-3 text-4xl leading-tight lg:text-6xl">What the Architecture Must Support</h2>
-            </div>
-            <p class="text-lg leading-8 text-slate-600">
-              The literature review produces practical requirements for the system. These requirements are used to evaluate whether the design can support meaningful attacker observation.
-            </p>
-          </div>
-
-          <div class="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
-            <div class="glass rounded-[34px] p-6 lg:p-8">
-              <div class="space-y-8">
-                <div class="requirement-step">
-                  <div class="requirement-dot">1</div>
-                  <h3 class="text-2xl font-black">Plausible Entry Points</h3>
-                  <p class="mt-2 leading-7 text-slate-600">The network-facing layer must look worth probing without appearing unrealistically vulnerable or empty. Service banners, exposed ports, and initial credentials should support believable reconnaissance.</p>
-                </div>
-                <div class="requirement-step">
-                  <div class="requirement-dot">2</div>
-                  <h3 class="text-2xl font-black">Internal Continuation Paths</h3>
-                  <p class="mt-2 leading-7 text-slate-600">The attacker must discover internal hosts, identities, shares, and credentials that make lateral movement plausible enough to continue the session.</p>
-                </div>
-                <div class="requirement-step">
-                  <div class="requirement-dot">3</div>
-                  <h3 class="text-2xl font-black">High-Value End Targets</h3>
-                  <p class="mt-2 leading-7 text-slate-600">The data/cloud layer must provide realistic objectives such as fake storage, API keys, documents, and cloud references that reveal collection and exfiltration intent.</p>
-                </div>
-                <div class="requirement-step">
-                  <div class="requirement-dot">4</div>
-                  <h3 class="text-2xl font-black">Cross-Layer Observability</h3>
-                  <p class="mt-2 leading-7 text-slate-600">Logs cannot remain isolated per service. The system must preserve identities, timestamps, and artifact IDs so attacker sessions can be reconstructed across layers.</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="space-y-5">
-              <div class="soft-card rounded-3xl p-6">
-                <span class="tag"><i class="fa-solid fa-check-double"></i> Design Principle</span>
-                <h3 class="mt-4 text-2xl font-black">Progressive Revelation</h3>
-                <p class="mt-3 leading-7 text-slate-600">The system should not reveal every asset at once. Instead, each layer should become more visible as the attacker demonstrates interest, capability, or commitment.</p>
-              </div>
-              <div class="soft-card rounded-3xl p-6">
-                <span class="tag"><i class="fa-solid fa-scale-balanced"></i> Design Tradeoff</span>
-                <h3 class="mt-4 text-2xl font-black">Fidelity vs. Safety</h3>
-                <p class="mt-3 leading-7 text-slate-600">The architecture must be realistic enough to sustain interaction while staying isolated, controlled, resettable, and free of genuine sensitive data.</p>
-              </div>
-              <div class="soft-card rounded-3xl p-6">
-                <span class="tag"><i class="fa-solid fa-magnifying-glass-chart"></i> Analysis Need</span>
-                <h3 class="mt-4 text-2xl font-black">Behaviour Before Alerts</h3>
-                <p class="mt-3 leading-7 text-slate-600">The goal is not only to detect an intrusion. The goal is to observe what attackers do next, what they value, and how deception changes their path.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="architecture" class="section">
-        <div class="section-inner">
-          <div class="split-title mb-9">
-            <div>
-              <p class="text-sm font-black uppercase tracking-[0.24em] text-[#8f4f2f]">Architecture Design</p>
-              <h2 class="display mt-3 text-4xl leading-tight lg:text-6xl">Layered Honeynet Model</h2>
-            </div>
-            <p class="text-lg leading-8 text-slate-600">
-              The proposed system is organized into three deception layers. Each layer corresponds to a different stage of attacker activity and produces telemetry for behavioural reconstruction.
-            </p>
-          </div>
-
-          <div class="glass rounded-[34px] p-5 lg:p-8">
-            <div class="mb-6 flex flex-wrap gap-3">
-              <button class="architecture-tab active rounded-2xl px-5 py-3 text-sm font-black" data-layer="network">Network Layer</button>
-              <button class="architecture-tab rounded-2xl px-5 py-3 text-sm font-black" data-layer="host">Host / AD Layer</button>
-              <button class="architecture-tab rounded-2xl px-5 py-3 text-sm font-black" data-layer="data">Data / Cloud Layer</button>
-            </div>
-
-            <div class="architecture-panel active" data-panel="network">
-              <div class="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-                <div class="rounded-3xl bg-[#13211f] p-7 text-white">
-                  <p class="text-xs font-black uppercase tracking-[0.22em] text-white/56">Reconnaissance and Initial Access</p>
-                  <h3 class="display mt-3 text-4xl">Network Deception</h3>
-                  <p class="mt-4 leading-7 text-white/74">Attacker-facing services create the first believable contact point and capture scanning, probing, banner interpretation, exploit selection, and credential attempts.</p>
-                </div>
-                <div class="grid gap-4 md:grid-cols-3">
-                  <div class="rounded-3xl bg-white/70 p-5">
-                    <i class="fa-solid fa-network-wired text-2xl text-[#8f4f2f]"></i>
-                    <h4 class="mt-4 font-black">Components</h4>
-                    <p class="mt-2 text-sm leading-6 text-slate-600">T-Pot CE, SSH/HTTP/SMB exposure, crafted banners, simulated subnets.</p>
-                  </div>
-                  <div class="rounded-3xl bg-white/70 p-5">
-                    <i class="fa-solid fa-crosshairs text-2xl text-[#8f4f2f]"></i>
-                    <h4 class="mt-4 font-black">ATT&CK Mapping</h4>
-                    <p class="mt-2 text-sm leading-6 text-slate-600">Reconnaissance, initial access, discovery, credential access.</p>
-                  </div>
-                  <div class="rounded-3xl bg-white/70 p-5">
-                    <i class="fa-solid fa-file-lines text-2xl text-[#8f4f2f]"></i>
-                    <h4 class="mt-4 font-black">Telemetry</h4>
-                    <p class="mt-2 text-sm leading-6 text-slate-600">Service logs, connection metadata, brute-force attempts, command traces.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="architecture-panel" data-panel="host">
-              <div class="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-                <div class="rounded-3xl bg-[#526b5a] p-7 text-white">
-                  <p class="text-xs font-black uppercase tracking-[0.22em] text-white/62">Execution and Lateral Movement</p>
-                  <h3 class="display mt-3 text-4xl">Host / Active Directory Deception</h3>
-                  <p class="mt-4 leading-7 text-white/80">The internal enterprise layer gives attackers a believable environment for enumeration, credential harvesting, privilege path discovery, and lateral movement.</p>
-                </div>
-                <div class="grid gap-4 md:grid-cols-3">
-                  <div class="rounded-3xl bg-white/70 p-5">
-                    <i class="fa-solid fa-users-gear text-2xl text-[#526b5a]"></i>
-                    <h4 class="mt-4 font-black">Components</h4>
-                    <p class="mt-2 text-sm leading-6 text-slate-600">GOAD Active Directory, domain controller, workstation, file server.</p>
-                  </div>
-                  <div class="rounded-3xl bg-white/70 p-5">
-                    <i class="fa-solid fa-key text-2xl text-[#526b5a]"></i>
-                    <h4 class="mt-4 font-black">Deception Artifacts</h4>
-                    <p class="mt-2 text-sm leading-6 text-slate-600">Decoy accounts, fake admin paths, planted credentials, honeyfiles.</p>
-                  </div>
-                  <div class="rounded-3xl bg-white/70 p-5">
-                    <i class="fa-solid fa-route text-2xl text-[#526b5a]"></i>
-                    <h4 class="mt-4 font-black">Observation Target</h4>
-                    <p class="mt-2 text-sm leading-6 text-slate-600">Enumeration, privilege escalation attempts, credential reuse, host traversal.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="architecture-panel" data-panel="data">
-              <div class="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-                <div class="rounded-3xl bg-[#8f4f2f] p-7 text-white">
-                  <p class="text-xs font-black uppercase tracking-[0.22em] text-white/62">Collection and Exfiltration</p>
-                  <h3 class="display mt-3 text-4xl">Data / Cloud Deception</h3>
-                  <p class="mt-4 leading-7 text-white/80">Higher-value lures test whether attackers pursue cloud targets, inspect decoy data, reuse harvested credentials, or attempt exfiltration-like actions.</p>
-                </div>
-                <div class="grid gap-4 md:grid-cols-3">
-                  <div class="rounded-3xl bg-white/70 p-5">
-                    <i class="fa-solid fa-cloud text-2xl text-[#8f4f2f]"></i>
-                    <h4 class="mt-4 font-black">Components</h4>
-                    <p class="mt-2 text-sm leading-6 text-slate-600">HoneyLambda, decoy S3 buckets, fake API keys, cloud references.</p>
-                  </div>
-                  <div class="rounded-3xl bg-white/70 p-5">
-                    <i class="fa-solid fa-box-archive text-2xl text-[#8f4f2f]"></i>
-                    <h4 class="mt-4 font-black">Deception Value</h4>
-                    <p class="mt-2 text-sm leading-6 text-slate-600">Plausible data targets create a reason for attackers to continue beyond host access.</p>
-                  </div>
-                  <div class="rounded-3xl bg-white/70 p-5">
-                    <i class="fa-solid fa-fingerprint text-2xl text-[#8f4f2f]"></i>
-                    <h4 class="mt-4 font-black">Observation Target</h4>
-                    <p class="mt-2 text-sm leading-6 text-slate-600">API calls, token usage, storage enumeration, collection behaviour.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="mermaid-box mt-7">
-              <div class="mermaid">
-                flowchart LR
-                  A["Network Layer<br/>external services"] --> B["Host / AD Layer<br/>internal enterprise context"]
-                  B --> C["Data / Cloud Layer<br/>high-value lures"]
-                  A --> D["Central Telemetry"]
-                  B --> D
-                  C --> D
-                  D --> E["Normalization<br/>artifact identity tags"]
-                  E --> F["Session reconstruction"]
-                F --> G["Behavioural metrics<br/>misdirection, delay, engagement"]
-              </div>
-            </div>
-
-            <div class="mt-7 grid gap-5 lg:grid-cols-3">
-              <div class="rounded-3xl bg-white/70 p-6">
-                <p class="metric-pill"><i class="fa-solid fa-network-wired"></i> Layer Output</p>
-                <h3 class="mt-4 text-xl font-black">Network Layer Evidence</h3>
-                <ul class="mt-3 space-y-2 text-sm leading-6 text-slate-600">
-                  <li>Port and service interest patterns</li>
-                  <li>Authentication attempts and credential guesses</li>
-                  <li>Early command execution or exploit traces</li>
-                  <li>Signals for exposing internal lures</li>
+              <div class="telem">
+                <span class="tlabel">Telemetry surfaced</span>
+                <ul>
+                  <li><span class="code">L1 ◆</span>Service banner pulls &amp; port profiles</li>
+                  <li><span class="code">L1 ◆</span>Credential-guess sequences</li>
+                  <li><span class="code">L1 ◆</span>Early exploit traces</li>
+                  <li><span class="code">L1 ◆</span>Signals justifying L2 exposure</li>
                 </ul>
               </div>
-              <div class="rounded-3xl bg-white/70 p-6">
-                <p class="metric-pill"><i class="fa-solid fa-users-gear"></i> Layer Output</p>
-                <h3 class="mt-4 text-xl font-black">Host / AD Evidence</h3>
-                <ul class="mt-3 space-y-2 text-sm leading-6 text-slate-600">
-                  <li>Domain and account enumeration</li>
-                  <li>Credential harvesting and reuse attempts</li>
-                  <li>Privilege escalation exploration</li>
-                  <li>Movement between decoy machines</li>
+            </div>
+
+            <div class="layer steel">
+              <div class="ladge"><span class="lnum">02</span>Layer Two</div>
+              <div class="lbody">
+                <div class="sub">Execution · Privilege Escalation · Lateral Movement</div>
+                <h3>Host &amp; <em>Active Directory</em> Deception</h3>
+                <p>The internal enterprise layer. Active Directory, decoy accounts, planted credentials, fake admin paths, and honeyfiles together create a believable post-compromise environment. This is where attackers reveal whether they reason about identity and trust at all — and how aggressively they move through it.</p>
+                <dl class="kvgrid">
+                  <dt>Components</dt><dd>GOAD · domain controller · workstations · file servers</dd>
+                  <dt>Realism</dt><dd>Non-optimal AD groups, legacy users, weak passwords, fake admin accounts</dd>
+                  <dt>Expected</dt><dd>Enumeration, credential harvesting, Kerberoasting, RDP/SMB lateral pivots</dd>
+                </dl>
+              </div>
+              <div class="telem">
+                <span class="tlabel">Telemetry surfaced</span>
+                <ul>
+                  <li><span class="code">L2 ◆</span>Domain &amp; account enumeration</li>
+                  <li><span class="code">L2 ◆</span>Credential harvesting &amp; reuse</li>
+                  <li><span class="code">L2 ◆</span>Privilege-escalation probes</li>
+                  <li><span class="code">L2 ◆</span>Movement between decoy hosts</li>
                 </ul>
               </div>
-              <div class="rounded-3xl bg-white/70 p-6">
-                <p class="metric-pill"><i class="fa-solid fa-cloud"></i> Layer Output</p>
-                <h3 class="mt-4 text-xl font-black">Data / Cloud Evidence</h3>
-                <ul class="mt-3 space-y-2 text-sm leading-6 text-slate-600">
-                  <li>Cloud API key usage attempts</li>
-                  <li>Storage enumeration and object access</li>
-                  <li>Honeyfile opening and collection behaviour</li>
-                  <li>Exfiltration-like target selection</li>
+            </div>
+
+            <div class="layer moss">
+              <div class="ladge"><span class="lnum">03</span>Layer Three</div>
+              <div class="lbody">
+                <div class="sub">Collection · Exfiltration Simulation</div>
+                <h3>Data &amp; <em>Cloud</em> Deception</h3>
+                <p>Higher-value lures test whether the attacker pursues cloud targets, opens decoy data, reuses harvested credentials in the cloud, or attempts exfiltration-shaped actions. The cloud surface is fully simulated — no real outbound trust — so behaviour is captured without exposing real assets.</p>
+                <dl class="kvgrid">
+                  <dt>Components</dt><dd>HoneyLambda · decoy S3 buckets · fake API keys · cloud references</dd>
+                  <dt>Realism</dt><dd>Plausible bucket and key names, discoverable but scoped credentials</dd>
+                  <dt>Expected</dt><dd>Credential reuse, cloud enumeration, object listing, simulated exfiltration</dd>
+                </dl>
+              </div>
+              <div class="telem">
+                <span class="tlabel">Telemetry surfaced</span>
+                <ul>
+                  <li><span class="code">L3 ◆</span>Cloud API key usage</li>
+                  <li><span class="code">L3 ◆</span>Storage enumeration</li>
+                  <li><span class="code">L3 ◆</span>Honeyfile opening patterns</li>
+                  <li><span class="code">L3 ◆</span>Exfiltration-shaped target selection</li>
                 </ul>
               </div>
             </div>
@@ -849,245 +1959,738 @@
         </div>
       </section>
 
-      <section id="telemetry" class="section">
-        <div class="section-inner">
-          <div class="split-title mb-9">
-            <div>
-              <p class="text-sm font-black uppercase tracking-[0.24em] text-[#8f4f2f]">Telemetry and Measurement</p>
-              <h2 class="display mt-3 text-4xl leading-tight lg:text-6xl">How Behaviour Becomes Evidence</h2>
-            </div>
-            <p class="text-lg leading-8 text-slate-600">
-              The architecture is designed not only to attract interaction, but to preserve the sequence and meaning of that interaction across layers.
-            </p>
+      <!-- §2.3 Calibration -->
+      <section class="block" id="calibration">
+        <div class="gutter">§ 2.3 — Calibration</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§2.3</span><span class="sec-eyebrow">Realism vs. Lure Calibration</span></div>
+          <h2 class="sec-title">Where to sit on the realism–lure axis, by dimension.</h2>
+          <p class="sec-lede">A honeynet that is too realistic offers no signal (attackers discover nothing); one that is too obvious is dismissed (attackers disengage). The project explicitly chooses a position on each of four design dimensions.</p>
+
+          <div class="tbl-wrap">
+            <table class="calib">
+              <thead>
+                <tr>
+                  <th>Dimension</th>
+                  <th>Higher Realism</th>
+                  <th>Higher Lure</th>
+                  <th>Chosen Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Vulnerabilities</td>
+                  <td>subtle, chained, defensible</td>
+                  <td>obvious, isolated, single-step</td>
+                  <td class="choice">moderate &middot; chained</td>
+                </tr>
+                <tr>
+                  <td>Credentials</td>
+                  <td>hard to find, scoped tightly</td>
+                  <td>easy, abundant, global</td>
+                  <td class="choice">discoverable but scoped</td>
+                </tr>
+                <tr>
+                  <td>Progression</td>
+                  <td>slow, logical, intra-system</td>
+                  <td>fast, noisy, cross-domain</td>
+                  <td class="choice">guided but misleading</td>
+                </tr>
+                <tr>
+                  <td>Cost &amp; Stability</td>
+                  <td>high · high-fidelity replicas</td>
+                  <td>low · throwaway scripts</td>
+                  <td class="choice">academic-feasible</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <div class="grid gap-5 lg:grid-cols-3">
-            <div class="soft-card rounded-3xl p-6">
-              <i class="fa-solid fa-tags text-3xl text-[#8f4f2f]"></i>
-              <h3 class="mt-4 text-2xl font-black">Artifact Tagging</h3>
-              <p class="mt-3 leading-7 text-slate-600">Each decoy service, credential, file, account, and cloud key receives a unique identity so later interactions can be traced back to the lure that caused them.</p>
-            </div>
-            <div class="soft-card rounded-3xl p-6">
-              <i class="fa-solid fa-code-branch text-3xl text-[#526b5a]"></i>
-              <h3 class="mt-4 text-2xl font-black">Path Reconstruction</h3>
-              <p class="mt-3 leading-7 text-slate-600">Events are correlated into attacker sessions, showing how actions move from network access to host exploration and data/cloud targeting.</p>
-            </div>
-            <div class="soft-card rounded-3xl p-6">
-              <i class="fa-solid fa-chart-simple text-3xl text-[#8f4f2f]"></i>
-              <h3 class="mt-4 text-2xl font-black">Behavioural Metrics</h3>
-              <p class="mt-3 leading-7 text-slate-600">Misdirection, delay, and engagement depth translate raw telemetry into evidence about whether deception influenced attacker behaviour.</p>
-            </div>
+          <div class="aside-note">
+            <h5>Calibration is policy, not setting</h5>
+            The four positions above are environment-wide defaults. Individual assets may sit elsewhere — e.g. a single fake admin account placed deliberately easy-to-find functions as a high-lure tripwire. <em>The calibration table is the policy, not a uniform setting.</em>
           </div>
+        </div>
+      </section>
 
-          <div class="mt-7 grid gap-5 lg:grid-cols-2">
-            <div class="soft-card rounded-3xl p-6">
-              <h3 class="text-2xl font-black">Normalized Event Fields</h3>
-              <p class="mt-3 leading-7 text-slate-600">A consistent schema makes heterogeneous logs comparable across network services, Windows hosts, Active Directory, and cloud simulation components.</p>
-              <div class="mt-5 grid gap-3 sm:grid-cols-2">
-                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Timestamp</div>
-                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Attacker identifier</div>
-                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Target asset</div>
-                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Action category</div>
-                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">Artifact ID</div>
-                <div class="rounded-2xl bg-[#dfe9dc]/70 p-4 font-bold">ATT&CK tactic</div>
-              </div>
+      <!-- §2.4 ATT&CK -->
+      <section class="block" id="attack">
+        <div class="gutter">§ 2.4 — ATT&CK</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§2.4</span><span class="sec-eyebrow">MITRE ATT&amp;CK Coverage</span></div>
+          <h2 class="sec-title">Per-layer commitment to tactic, technique, and observable evidence.</h2>
+          <p class="sec-lede">Tagging every observed action with an ATT&amp;CK technique converts heterogeneous logs into a comparable currency. The matrix below is the project's commitment about <strong>which tactics each layer is engineered to surface</strong>, with concrete observable evidence for each.</p>
+
+          <div class="tbl-wrap">
+            <table class="attack">
+              <thead>
+                <tr>
+                  <th style="width:14%">Layer</th>
+                  <th style="width:24%">Tactic</th>
+                  <th style="width:30%">Example Technique</th>
+                  <th>Observable Evidence</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="layer-1">
+                  <td class="lay" rowspan="3">L · 01<br/>Network</td>
+                  <td class="tactic">Reconnaissance<span class="tac-id">TA0043</span></td>
+                  <td class="tech"><span class="tcode">T1046</span>Network Service Scanning</td>
+                  <td class="ev">Port-scan distributions, banner-grab traces</td>
+                </tr>
+                <tr class="layer-1">
+                  <td class="tactic">Credential Access<span class="tac-id">TA0006</span></td>
+                  <td class="tech"><span class="tcode">T1110</span>Brute Force</td>
+                  <td class="ev">Failed-login bursts, credential-guess sequences</td>
+                </tr>
+                <tr class="layer-1">
+                  <td class="tactic">Initial Access<span class="tac-id">TA0001</span></td>
+                  <td class="tech"><span class="tcode">T1190</span>Exploit Public-Facing Application</td>
+                  <td class="ev">Exploit attempts on exposed services, payload traces</td>
+                </tr>
+
+                <tr class="layer-2">
+                  <td class="lay" rowspan="4">L · 02<br/>Host / AD</td>
+                  <td class="tactic">Discovery<span class="tac-id">TA0007</span></td>
+                  <td class="tech"><span class="tcode">T1087</span>Account Discovery</td>
+                  <td class="ev">AD enumeration, BloodHound-shaped queries</td>
+                </tr>
+                <tr class="layer-2">
+                  <td class="tactic">Credential Access<span class="tac-id">TA0006</span></td>
+                  <td class="tech"><span class="tcode">T1558.003</span>Kerberoasting</td>
+                  <td class="ev">SPN ticket requests for decoy service accounts</td>
+                </tr>
+                <tr class="layer-2">
+                  <td class="tactic">Privilege Escalation<span class="tac-id">TA0004</span></td>
+                  <td class="tech"><span class="tcode">T1068</span>Exploitation for Privilege Escalation</td>
+                  <td class="ev">Process creation, token-abuse signatures</td>
+                </tr>
+                <tr class="layer-2">
+                  <td class="tactic">Lateral Movement<span class="tac-id">TA0008</span></td>
+                  <td class="tech"><span class="tcode">T1021.001</span>Remote Desktop Protocol</td>
+                  <td class="ev">SMB / RDP authentication logs, host-to-host pivots</td>
+                </tr>
+
+                <tr class="layer-3">
+                  <td class="lay" rowspan="3">L · 03<br/>Data / Cloud</td>
+                  <td class="tactic">Collection<span class="tac-id">TA0009</span></td>
+                  <td class="tech"><span class="tcode">T1530</span>Data from Cloud Storage</td>
+                  <td class="ev">Object-listing attempts, decoy-bucket access</td>
+                </tr>
+                <tr class="layer-3">
+                  <td class="tactic">Exfiltration<span class="tac-id">TA0010</span></td>
+                  <td class="tech"><span class="tcode">T1567</span>Exfiltration Over Web Services</td>
+                  <td class="ev">API usage anomalies, planted-key activations</td>
+                </tr>
+                <tr class="layer-3">
+                  <td class="tactic">Defense Evasion<span class="tac-id">TA0005</span></td>
+                  <td class="tech"><span class="tcode">T1070</span>Indicator Removal on Host</td>
+                  <td class="ev">Log-tampering attempts, history-clear traces</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- §2.5 Anti-Patterns -->
+      <section class="block" id="antipatterns">
+        <div class="gutter">§ 2.5 — Anti-patterns</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§2.5</span><span class="sec-eyebrow">Anti-Patterns Avoided</span></div>
+          <h2 class="sec-title">Six failure modes deliberately designed against.</h2>
+          <p class="sec-lede">Most failed honeynets fail in predictable ways. Listing the failures explicitly disciplines the build: each anti-pattern below was rejected with a stated reason, and tested for in the design review of every component.</p>
+
+          <div class="antipatterns">
+            <div class="ap">
+              <span class="x">✗ · 01</span>
+              <h4>Overtly fake assets</h4>
+              <p>Hostnames like <code>test123</code> or <code>admin_fake</code>; empty files; placeholder content; perfectly uniform configurations.</p>
+              <div class="impact">Skilled attackers disengage early; engagement metrics collapse and the layered claim becomes unprovable.</div>
             </div>
-
-            <div class="soft-card rounded-3xl p-6">
-              <h3 class="text-2xl font-black">Metric Operationalization</h3>
-              <div class="mt-5 space-y-4">
-                <div class="rounded-3xl bg-white/70 p-5">
-                  <p class="metric-pill"><i class="fa-solid fa-route"></i> Misdirection</p>
-                  <p class="mt-3 leading-7 text-slate-600">Measured through decoy-path interactions, fake credential use, honeyfile access, and movement toward designed lure routes.</p>
-                </div>
-                <div class="rounded-3xl bg-white/70 p-5">
-                  <p class="metric-pill"><i class="fa-solid fa-clock"></i> Delay</p>
-                  <p class="mt-3 leading-7 text-slate-600">Measured through time spent interacting with deceptive assets, repeated reconnaissance, and detours caused by planted artifacts.</p>
-                </div>
-                <div class="rounded-3xl bg-white/70 p-5">
-                  <p class="metric-pill"><i class="fa-solid fa-layer-group"></i> Engagement Depth</p>
-                  <p class="mt-3 leading-7 text-slate-600">Measured by layer progression, diversity of actions, number of artifact categories touched, and tactic coverage.</p>
-                </div>
-              </div>
+            <div class="ap">
+              <span class="x">✗ · 02</span>
+              <h4>Single-step total compromise</h4>
+              <p>One vulnerability that grants immediate domain-admin-equivalent access; flat administrative trust; no friction between layers.</p>
+              <div class="impact">No measurable misdirection or delay; Layer 2 becomes meaningless and the architecture collapses to a single sensor.</div>
+            </div>
+            <div class="ap">
+              <span class="x">✗ · 03</span>
+              <h4>Over-hardened systems</h4>
+              <p>Patched-to-the-edge services; strong, unique credentials everywhere; nothing actionable for an attacker to do after first contact.</p>
+              <div class="impact">No attacker progression; the project degrades into a passive listener with nothing to listen for.</div>
+            </div>
+            <div class="ap">
+              <span class="x">✗ · 04</span>
+              <h4>Unobservable deception</h4>
+              <p>Missing authentication logs; no process or command telemetry; honeyfiles whose access cannot be uniquely attributed.</p>
+              <div class="impact">Actions cannot be mapped to ATT&amp;CK; data is unusable for the thesis; the design loses its falsifiability.</div>
+            </div>
+            <div class="ap">
+              <span class="x">✗ · 05</span>
+              <h4>Real external trust or credentials</h4>
+              <p>Real cloud accounts; real API keys; live outbound exfiltration channels; any genuine production data left inside the lab.</p>
+              <div class="impact">Ethical and institutional risk; violates the academic safety boundary that lets the work be defended at all.</div>
+            </div>
+            <div class="ap">
+              <span class="x">✗ · 06</span>
+              <h4>Overly complex services</h4>
+              <p>Full enterprise applications stood up purely for atmosphere; dependencies that double the operational surface without doubling the telemetry surface.</p>
+              <div class="impact">Setup time inflates, instability rises, and infrastructure debugging crowds out the research questions.</div>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="experiment" class="section">
-        <div class="section-inner">
-          <div class="split-title mb-9">
-            <div>
-              <p class="text-sm font-black uppercase tracking-[0.24em] text-[#8f4f2f]">Experimental Scope</p>
-              <h2 class="display mt-3 text-4xl leading-tight lg:text-6xl">Controlled Testbed Design</h2>
-            </div>
-            <p class="text-lg leading-8 text-slate-600">
-              The project uses a contained virtual environment so the architecture can be evaluated safely, reset cleanly, and reproduced for repeated observation.
-            </p>
+      <!-- §2.6 Observability -->
+      <section class="block" id="telemetry">
+        <div class="gutter">§ 2.6 — Observability</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§2.6</span><span class="sec-eyebrow">Observability &amp; Event Schema</span></div>
+          <h2 class="sec-title">Three primitives turn raw logs into reconstructable behaviour.</h2>
+          <p class="sec-lede">Cross-layer behaviour is recoverable only when three commitments hold: every deceptive object has an identity; every event uses a normalised schema; every action carries the artifact ID it touched. The combination is what permits session reconstruction across heterogeneous sensors.</p>
+
+          <div class="tbl-wrap">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>Primitive</th>
+                  <th>What it provides</th>
+                  <th>Why it matters for the thesis</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Artifact tagging</td>
+                  <td>Each decoy service, credential, file, account, and cloud key receives a unique <span class="mono">artifact_id</span>.</td>
+                  <td>Lets later interactions be traced back to the lure that caused them — the precondition for measuring decoy-induced behaviour.</td>
+                </tr>
+                <tr>
+                  <td>Path reconstruction</td>
+                  <td>Events are correlated into attacker sessions across services, hosts, and cloud surfaces.</td>
+                  <td>Without it, layered evidence collapses into per-sensor noise; with it, RQ1 (navigation) becomes answerable.</td>
+                </tr>
+                <tr>
+                  <td>Behavioural metrics</td>
+                  <td>Misdirection, delay, and engagement (see §2.7) translate raw telemetry into evidence.</td>
+                  <td>Promotes the architecture from "alert generator" to "behavioural instrument."</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <div class="grid gap-5 lg:grid-cols-2">
-            <div class="glass rounded-[34px] p-6 lg:p-8">
-              <h3 class="text-2xl font-black">Proposed Lab Roles</h3>
-              <div class="mt-5 space-y-4">
-                <div class="rounded-3xl bg-white/70 p-5">
-                  <h4 class="font-black">LOG01 - Central Monitoring</h4>
-                  <p class="mt-2 text-sm leading-6 text-slate-600">Receives logs from all deception layers and supports normalization, correlation, and later analysis.</p>
+          <div class="codeblock"><span class="c">// Normalised event schema — applied to every emission, every layer.</span>
+{
+  <span class="k">"timestamp"</span>:        <span class="t">ISO8601</span>,        <span class="c">// UTC, microsecond resolution</span>
+  <span class="k">"session_id"</span>:       <span class="t">UUIDv4</span>,         <span class="c">// joined post-hoc by attacker_identifier + window</span>
+  <span class="k">"attacker_identifier"</span>: <span class="s">"src_ip + ja3 + tls_client"</span>,
+  <span class="k">"layer"</span>:            <span class="s">"L1" | "L2" | "L3"</span>,
+  <span class="k">"source"</span>:           { <span class="k">"host"</span>: <span class="t">str</span>, <span class="k">"port"</span>: <span class="t">int</span>, <span class="k">"asn"</span>: <span class="t">int?</span> },
+  <span class="k">"target_asset"</span>:     { <span class="k">"host"</span>: <span class="t">str</span>, <span class="k">"service"</span>: <span class="t">str</span>, <span class="k">"path"</span>: <span class="t">str?</span> },
+  <span class="k">"action_category"</span>:  <span class="s">"recon" | "auth" | "exec" | "discovery" | "lateral" | "collection" | "exfil"</span>,
+  <span class="k">"artifact_id"</span>:      <span class="t">str?</span>,           <span class="c">// decoy creds / honeyfile / API key / fake account</span>
+  <span class="k">"attck_tactic"</span>:     <span class="s">"TA0001"</span>,        <span class="c">// MITRE tactic code</span>
+  <span class="k">"attck_technique"</span>:  <span class="s">"T1046"</span>,         <span class="c">// MITRE technique code</span>
+  <span class="k">"raw"</span>:              { <span class="k">"_link"</span>: <span class="t">URI</span> }   <span class="c">// pointer to original log line</span>
+}</div>
+        </div>
+      </section>
+
+      <!-- §2.7 Measurement Framework -->
+      <section class="block" id="measurement">
+        <div class="gutter">§ 2.7 — Measurement</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§2.7</span><span class="sec-eyebrow">Measurement Framework</span></div>
+          <h2 class="sec-title">Three metric families, each session-derived, each defensible.</h2>
+          <p class="sec-lede">Because the environment is composed <strong>entirely of deceptive assets</strong>, classical "real vs. fake" misdirection metrics do not apply. The framework instead operationalises misdirection as <em>path deviation and decoy interaction</em>, delay as <em>dwell time</em>, and engagement as <em>depth and tactical diversity</em>.</p>
+
+          <div class="metricstack">
+            <div class="met">
+              <div class="mname">Misdirection<span class="tcode">M1 · M2 · M3</span></div>
+              <div class="mbody">
+                <h4>Definition</h4>
+                <p>Degree to which attackers follow decoy-induced paths or interact with explicitly deceptive elements rather than minimal-effort paths.</p>
+                <h4>Operationalisation</h4>
+                <div class="formulas">
+                  <span class="formula"><span class="v">DPER</span> <span class="op">=</span> Decoy-Element Actions <span class="op">/</span> Total Actions</span>
+                  <span class="formula"><span class="v">PEF</span> <span class="op">=</span> Observed Action Count <span class="op">/</span> Minimal-Path Action Count</span>
+                  <span class="formula"><span class="v">DIC</span> <span class="op">=</span> count( actions on dead-end assets )</span>
                 </div>
-                <div class="rounded-3xl bg-white/70 p-5">
-                  <h4 class="font-black">TPOT01 - Network Honeypot Layer</h4>
-                  <p class="mt-2 text-sm leading-6 text-slate-600">Hosts exposed deception services and captures first-stage attacker interactions.</p>
-                </div>
-                <div class="rounded-3xl bg-white/70 p-5">
-                  <h4 class="font-black">DC01 / WS01 / FS01 - Internal Enterprise Layer</h4>
-                  <p class="mt-2 text-sm leading-6 text-slate-600">Represents Active Directory, workstation activity, and file resources for post-compromise observation.</p>
-                </div>
+                <h4>Decoy elements include</h4>
+                <p style="font-family:var(--sans);font-size:13px;color:var(--ink-soft)">Fake AD users · honey API keys · decoy S3 buckets · non-functional admin shares · attributed honeyfiles.</p>
               </div>
             </div>
 
-            <div class="space-y-5">
-              <div class="soft-card rounded-3xl p-6">
-                <span class="tag"><i class="fa-solid fa-shield"></i> Safety</span>
-                <h3 class="mt-4 text-2xl font-black">Containment Principles</h3>
-                <p class="mt-3 leading-7 text-slate-600">The environment is isolated from production systems, uses only fabricated data, and restricts outbound behaviour through controlled network boundaries.</p>
+            <div class="met">
+              <div class="mname">Delay<span class="tcode">D1 · D2 · D3</span></div>
+              <div class="mbody">
+                <h4>Definition</h4>
+                <p>Additional time attackers spend interacting with deceptive assets before disengaging or progressing.</p>
+                <h4>Operationalisation</h4>
+                <div class="formulas">
+                  <span class="formula"><span class="v">Session Duration</span> <span class="op">=</span> last_log <span class="op">−</span> first_log</span>
+                  <span class="formula"><span class="v">Layer Dwell</span> <span class="op">=</span> Σ time-in-layer per layer</span>
+                  <span class="formula"><span class="v">Time-to-Abandonment</span> <span class="op">=</span> idle window after last action</span>
+                </div>
+                <h4>Why these three</h4>
+                <p style="font-family:var(--sans);font-size:13px;color:var(--ink-soft)">Total dwell quantifies overall friction; per-layer dwell isolates where deception worked; abandonment surfaces the inflection point of disengagement.</p>
               </div>
-              <div class="soft-card rounded-3xl p-6">
-                <span class="tag"><i class="fa-solid fa-rotate-left"></i> Reproducibility</span>
-                <h3 class="mt-4 text-2xl font-black">Resettable Experiments</h3>
-                <p class="mt-3 leading-7 text-slate-600">Snapshots and documented configuration states allow experiments to be repeated without carrying over attacker modifications or contaminated artifacts.</p>
-              </div>
-              <div class="soft-card rounded-3xl p-6">
-                <span class="tag"><i class="fa-solid fa-vial"></i> Scenarios</span>
-                <h3 class="mt-4 text-2xl font-black">Comparative Observation</h3>
-                <p class="mt-3 leading-7 text-slate-600">The design can support comparison between limited exposure, full layered exposure, and staged activation to understand how architecture changes behaviour.</p>
+            </div>
+
+            <div class="met">
+              <div class="mname">Engagement<span class="tcode">E1 · E2 · E3</span></div>
+              <div class="mbody">
+                <h4>Definition</h4>
+                <p>Depth and diversity of attacker actions across the environment.</p>
+                <h4>Operationalisation</h4>
+                <div class="formulas">
+                  <span class="formula"><span class="v">Action Count</span> <span class="op">=</span> count( logged events )</span>
+                  <span class="formula"><span class="v">Distinct Techniques</span> <span class="op">=</span> | { unique attck_technique } |</span>
+                  <span class="formula"><span class="v">Layer Depth</span> <span class="op">=</span> max( layer_reached ) <span style="color:var(--ink-mute)">∈ {1,2,3}</span></span>
+                </div>
+                <h4>Aggregated across sessions to compare</h4>
+                <p style="font-family:var(--sans);font-size:13px;color:var(--ink-soft)">Layered vs. flat exposure · staged-activation policies · lure rotation strategies.</p>
               </div>
             </div>
           </div>
 
-          <div class="mermaid-box mt-7">
-            <div class="mermaid">
-              flowchart TD
-                A["Isolated virtual lab"] --> B["External-facing deception network"]
-                A --> C["Internal enterprise network"]
-                A --> D["Management and logging network"]
-                B --> E["TPOT01<br/>honeypot services"]
-                C --> F["DC01<br/>Active Directory"]
-                C --> G["WS01<br/>workstation"]
-                C --> H["FS01<br/>file server and honeyfiles"]
-                D --> I["LOG01<br/>central monitoring"]
-                E --> I
-                F --> I
-                G --> I
-                H --> I
+          <div class="aside-note">
+            <h5>Methodology rationale</h5>
+            Because the HoneyNet contains only deceptive assets, traditional "real vs. fake" misdirection comparisons do not apply. Misdirection is therefore operationalised as path deviation and decoy interaction — reflecting the behavioural impact of layering rather than the existence of decoys. Delay and engagement come from observable timestamps, action counts, and reached depth. The result is <em>replicable, quantifiable, and academically defensible</em>.
+          </div>
+        </div>
+      </section>
+
+      <!-- §2.8 Sample Telemetry -->
+      <section class="block" id="sessions">
+        <div class="gutter">§ 2.8 — Telemetry sample</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§2.8</span><span class="sec-eyebrow">Sample Session Telemetry</span></div>
+          <h2 class="sec-title">What the metrics look like once a session is reconstructed.</h2>
+          <p class="sec-lede">The table below illustrates the metric framework applied to three illustrative sessions of varying engagement depth. It demonstrates the schema-to-metric pipeline end-to-end and serves as the analytic template for downstream evaluation.</p>
+
+          <div class="tbl-wrap">
+            <table class="sessions">
+              <thead>
+                <tr>
+                  <th>Session</th>
+                  <th>Layers Reached</th>
+                  <th>Dur. (min)</th>
+                  <th>Total Actions</th>
+                  <th>Decoy Actions</th>
+                  <th>DPER</th>
+                  <th>PEF</th>
+                  <th>Distinct Tech.</th>
+                  <th>Cloud Pivot</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>S001</td><td>L1 → L2</td><td>47</td><td>30</td><td>22</td><td>0.73</td><td>3.5</td><td>6</td>
+                  <td><span class="mark no"></span>no</td>
+                </tr>
+                <tr>
+                  <td>S002</td><td>L1</td><td>12</td><td>12</td><td>9</td><td>0.75</td><td>2.0</td><td>3</td>
+                  <td><span class="mark no"></span>no</td>
+                </tr>
+                <tr>
+                  <td>S003</td><td>L1 → L2 → L3</td><td>61</td><td>50</td><td>40</td><td>0.80</td><td>4.2</td><td>8</td>
+                  <td><span class="mark"></span>yes</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr><td colspan="9">Sessions are aggregated across experimental runs to compare the effect of layering, staged activation, and lure rotation as independent variables.</td></tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <div class="aside-note">
+            <h5>How to read this</h5>
+            <strong>S002</strong> is a shallow encounter — engagement collapses at L1. <strong>S001</strong> progresses but does not pivot to cloud. <strong>S003</strong> is the full intended trajectory: every layer reached, highest distinct-technique count, cloud pivot fires. The numerical contrast across these three is the <em>kind of evidence</em> the project aims to generate at scale.
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════ -->
+      <!-- ─────────── PART III — ENVIRONMENT SET UP ─────────── -->
+      <!-- ════════════════════════════════════════════════════════ -->
+      <div class="part-divider">
+        <div class="gutter">Part&nbsp;·&nbsp;03</div>
+        <div class="pcontent">
+          <div class="pmark">Part III <span class="pchip">Completed</span></div>
+          <h2>Environment <em>Set Up</em>.</h2>
+          <p class="pintro">The architecture above sits on a working physical and operational baseline. A dedicated mini-server hosts the virtualisation platform; an encrypted overlay carries management traffic; documentation lives in a structured handbook. Each component below has been <strong>stood up and validated</strong>; the network-layer sensor has been evaluated and is queued for deployment.</p>
+          <div class="deliverables">
+            <span>✓ Proxmox VE substrate</span>
+            <span>✓ Virtual networking</span>
+            <span>✓ Snapshot strategy</span>
+            <span>✓ Tailscale management plane</span>
+            <span>✓ Notion handbook</span>
+            <span>✓ T-Pot evaluated · pre-deploy</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- §3.1 Substrate -->
+      <section class="block" id="substrate">
+        <div class="gutter">§ 3.1 — Substrate</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§3.1</span><span class="sec-eyebrow">Hypervisor Substrate</span></div>
+          <h2 class="sec-title">Proxmox VE — the platform every layer will inherit.</h2>
+          <p class="sec-lede">Proxmox VE was selected for its snapshot capability, multi-VM flexibility, and suitability for security-experimentation workflows. A dedicated mini-server has been provisioned to host the capstone infrastructure and the deception layers that follow.</p>
+
+          <div class="statusgrid">
+            <div class="item">
+              <div class="top"><span class="tag">Substrate · 01</span><span class="status done">✓ Established</span></div>
+              <h4>Hypervisor &amp; <em>baseline</em></h4>
+              <p>Proxmox VE installed on dedicated mini-server hardware; baseline tuned for multi-VM honeynet workloads.</p>
+              <ul>
+                <li>Proxmox hypervisor installation</li>
+                <li>Baseline performance tuning</li>
+                <li>Storage layout for snapshot use</li>
+              </ul>
+            </div>
+            <div class="item">
+              <div class="top"><span class="tag">Substrate · 02</span><span class="status done">✓ Established</span></div>
+              <h4>Virtual <em>networking</em></h4>
+              <p>Bridge interfaces and segmentation laid out so deception layers can be isolated from each other and from the management plane.</p>
+              <ul>
+                <li>Bridge interface configuration</li>
+                <li>IP-assignment policy</li>
+                <li>Inter-VM connectivity validated</li>
+              </ul>
+            </div>
+            <div class="item">
+              <div class="top"><span class="tag">Substrate · 03</span><span class="status done">✓ Established</span></div>
+              <h4>VM provisioning <em>workflow</em></h4>
+              <p>Repeatable VM provisioning pipeline from Ubuntu Server baseline, with documented steps in the handbook.</p>
+              <ul>
+                <li>Initial VM provisioning workflow</li>
+                <li>Ubuntu Server deployment baseline</li>
+                <li>Per-role configuration profiles</li>
+              </ul>
+            </div>
+            <div class="item">
+              <div class="top"><span class="tag">Substrate · 04</span><span class="status done">✓ Established</span></div>
+              <h4>Snapshot <em>strategy</em></h4>
+              <p>Snapshot conventions for each VM role, supporting safe rollback after attacker contact and reset between experimental runs.</p>
+              <ul>
+                <li>Snapshot naming &amp; cadence</li>
+                <li>Rollback procedure documented</li>
+                <li>Pre-experiment baseline capture</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="aside-note">
+            <h5>Operational learning</h5>
+            The substrate phase consumed more effort than expected — bridge interfaces, IP assignment, package-repository synchronisation, and VM-deployment consistency each required iteration. The dividend is that subsequent layers inherit a <em>stable platform</em> rather than fighting the substrate.
+          </div>
+        </div>
+      </section>
+
+      <!-- §3.2 Management Plane -->
+      <section class="block" id="mgmtplane">
+        <div class="gutter">§ 3.2 — Mgmt plane</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§3.2</span><span class="sec-eyebrow">Management Plane</span></div>
+          <h2 class="sec-title">Tailscale-based encrypted overlay for remote operation.</h2>
+          <p class="sec-lede">An encrypted overlay carries management traffic, removing the need to expose admin interfaces to the public internet while supporting collaborative remote operation. The chosen pattern is industry-standard for laboratory environments and aligns with Principle <strong>P·04 Safe Containment</strong>.</p>
+
+          <div class="statusgrid">
+            <div class="item">
+              <div class="top"><span class="tag">Mgmt · 01</span><span class="status done">✓ Established</span></div>
+              <h4>Encrypted <em>remote access</em></h4>
+              <p>Tailscale overlay terminates on the lab; admin sessions are tunnelled, never exposed via the public internet.</p>
+              <ul>
+                <li>Encrypted remote administration</li>
+                <li>Remote troubleshooting workflow</li>
+                <li>Reduced public attack surface</li>
+              </ul>
+            </div>
+            <div class="item">
+              <div class="top"><span class="tag">Mgmt · 02</span><span class="status done">✓ Established</span></div>
+              <h4>Collaborative <em>access</em></h4>
+              <p>Multi-user access controlled at the overlay level, supporting distributed teamwork without exposing the lab itself.</p>
+              <ul>
+                <li>Per-user access scoping</li>
+                <li>Team collaboration model</li>
+                <li>Audit-trail at overlay edge</li>
+              </ul>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="contribution" class="section pb-10">
-        <div class="section-inner">
-          <div class="glass rounded-[36px] p-6 lg:p-10">
-            <div class="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+      <!-- §3.3 Documentation -->
+      <section class="block" id="docs">
+        <div class="gutter">§ 3.3 — Handbook</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§3.3</span><span class="sec-eyebrow">Operational Handbook</span></div>
+          <h2 class="sec-title">A structured Notion workspace as the project's operational memory.</h2>
+          <p class="sec-lede">A structured Notion workspace centralises deployment procedures, architecture notes, and operational observations. The handbook is the substrate that supports reproducibility, future maintenance, and demonstration activities — and the seedbed for the artifact registry that Part II's measurement framework depends on.</p>
+
+          <div class="statusgrid">
+            <div class="item">
+              <div class="top"><span class="tag">Docs · 01</span><span class="status done">✓ Established</span></div>
+              <h4>Procedure <em>library</em></h4>
+              <p>Step-by-step deployment and infrastructure procedures captured in a versionable format.</p>
+              <ul>
+                <li>Deployment procedures</li>
+                <li>Infrastructure setup steps</li>
+                <li>Remote-access documentation</li>
+              </ul>
+            </div>
+            <div class="item">
+              <div class="top"><span class="tag">Docs · 02</span><span class="status done">✓ Established</span></div>
+              <h4>Architectural <em>notes</em></h4>
+              <p>Network architecture and design notes kept alongside the procedures so build and reasoning stay co-located.</p>
+              <ul>
+                <li>Network architecture notes</li>
+                <li>Design-decision log</li>
+                <li>Troubleshooting observations</li>
+              </ul>
+            </div>
+            <div class="item">
+              <div class="top"><span class="tag">Docs · 03</span><span class="status done">✓ Established</span></div>
+              <h4>Artifact-tracking <em>seed</em></h4>
+              <p>Initial artifact-tracking concepts modelled in the workspace — the seed of the queryable artifact registry to come.</p>
+              <ul>
+                <li>Artifact tracking concepts</li>
+                <li>Seed schema for deception assets</li>
+                <li>Naming convention for artifact IDs</li>
+              </ul>
+            </div>
+            <div class="item">
+              <div class="top"><span class="tag">Docs · 04</span><span class="status done">✓ Established</span></div>
+              <h4>Reproducibility <em>posture</em></h4>
+              <p>Documentation organised to support reproduction of experiments and future demonstration walkthroughs.</p>
+              <ul>
+                <li>Reproducibility checklist</li>
+                <li>Demo-walkthrough scaffolding</li>
+                <li>Onboarding path for future team</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- §3.4 Sensor Evaluation -->
+      <section class="block" id="sensor">
+        <div class="gutter">§ 3.4 — Sensor</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§3.4</span><span class="sec-eyebrow">Layer-1 Sensor Evaluation</span></div>
+          <h2 class="sec-title">T-Pot CE evaluated as the network-deception layer; deployment is queued.</h2>
+          <p class="sec-lede">The integration potential of T-Pot CE has been assessed against the architecture's requirements for Layer 1 (network deception). Functionality, schema alignment, and operational fit have been reviewed; deployment, sensor validation, and resource profiling form the next implementation milestone.</p>
+
+          <div class="statusgrid">
+            <div class="item">
+              <div class="top"><span class="tag">Sensor · 01</span><span class="status eval">◆ Evaluated</span></div>
+              <h4>T-Pot CE <em>fit assessment</em></h4>
+              <p>Reviewed against Layer-1 requirements: service variety, banner customisability, logging integration, and resource footprint.</p>
+              <ul>
+                <li>Functional fit confirmed</li>
+                <li>Schema-alignment plan drafted</li>
+                <li>Resource budget estimated</li>
+              </ul>
+            </div>
+            <div class="item">
+              <div class="top"><span class="tag">Sensor · 02</span><span class="status in-prog">◐ Pre-deploy</span></div>
+              <h4>Next: <em>deploy &amp; validate</em></h4>
+              <p>The next milestone covers VM deployment, sensor functional validation, dashboard configuration, and visibility testing into the central pipeline.</p>
+              <ul>
+                <li>T-Pot VM deployment in Proxmox</li>
+                <li>Sensor functionality validation</li>
+                <li>Logging &amp; dashboard configuration</li>
+                <li>Network visibility testing</li>
+                <li>Resource-utilisation profiling</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- §3.5 Component Readiness -->
+      <section class="block" id="readiness">
+        <div class="gutter">§ 3.5 — Readiness</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§3.5</span><span class="sec-eyebrow">Component Readiness Assessment</span></div>
+          <h2 class="sec-title">Open-source readiness vs. customisation effort, by component.</h2>
+          <p class="sec-lede">For each major open-source building block, the project has assessed both <strong>how close the component sits to project-fit out of the box</strong> and <strong>how much customisation is needed</strong> for it to serve the architecture defensibly.</p>
+
+          <div class="tbl-wrap">
+            <table class="readiness">
+              <thead>
+                <tr>
+                  <th>Component</th>
+                  <th class="center">Out-of-Box Readiness</th>
+                  <th>Modification Required</th>
+                  <th class="center">Customisation Complexity</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>T-Pot CE</td>
+                  <td class="center"><span class="gauge"><span class="pip on"></span><span class="pip on"></span><span class="pip on"></span><span class="pip on"></span><span class="pip"></span></span></td>
+                  <td>Service selection, banner tuning, logging alignment with normalised schema.</td>
+                  <td class="center"><span class="effort">Low – Medium</span></td>
+                </tr>
+                <tr>
+                  <td>GOAD (AD lab)</td>
+                  <td class="center"><span class="gauge"><span class="pip steel"></span><span class="pip steel"></span><span class="pip steel"></span><span class="pip"></span><span class="pip"></span></span></td>
+                  <td>AD topology adjustments, decoy-account design, credential placement, GPO misconfigurations, logging.</td>
+                  <td class="center"><span class="effort">Medium</span></td>
+                </tr>
+                <tr>
+                  <td>HoneyLambda</td>
+                  <td class="center"><span class="gauge"><span class="pip amber"></span><span class="pip amber"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span></span></td>
+                  <td>Token placement, alert tuning, log parsing into normalised schema.</td>
+                  <td class="center"><span class="effort">Medium</span></td>
+                </tr>
+                <tr>
+                  <td>Decoy S3 / storage</td>
+                  <td class="center"><span class="gauge"><span class="pip amber"></span><span class="pip amber"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span></span></td>
+                  <td>Naming realism, access-policy shaping, artifact-ID injection.</td>
+                  <td class="center"><span class="effort">Low</span></td>
+                </tr>
+                <tr>
+                  <td>Central logging</td>
+                  <td class="center"><span class="gauge"><span class="pip amber"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span></span></td>
+                  <td>Schema normalisation, session-correlation pipeline, ATT&amp;CK tagging at ingest.</td>
+                  <td class="center"><span class="effort">Medium</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="aside-note">
+            <h5>Where the work actually lives</h5>
+            <strong>Most effort lies in designing believable misconfigurations</strong>, not in writing exploit code. Infrastructure and operations skill outweighs offensive engineering in the build phase. Layer 1, Layer 2, and central logging are the natural axes of parallelisation.
+          </div>
+        </div>
+      </section>
+
+      <!-- §3.6 Considerations -->
+      <section class="block" id="considerations">
+        <div class="gutter">§ 3.6 — Open issues</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§3.6</span><span class="sec-eyebrow">Outstanding Considerations</span></div>
+          <h2 class="sec-title">Live tradeoffs the next phase must resolve.</h2>
+          <p class="sec-lede">Some design questions are deliberately unresolved at this stage; resolving them prematurely would foreclose options the experimental phase needs to explore. The four open considerations below are surfaced explicitly so review can sharpen them.</p>
+
+          <div class="considerations">
+            <div class="c">
+              <span class="ord">▸ Open · 01</span>
+              <h4>Realism vs. <em>safety</em> on the boundary</h4>
+              <p>How realistic can the environment appear without weakening the safety boundary? Network segmentation, containment controls, service exposure, and outbound restriction interact in ways that can collapse one constraint while improving another. Active design consideration.</p>
+            </div>
+            <div class="c">
+              <span class="ord">▸ Open · 02</span>
+              <h4>Logging completeness vs. <em>operational noise</em></h4>
+              <p>Per-action telemetry is a hard requirement, but pushing every event through the normalisation pipeline carries cost. The project must decide where in the pipeline to filter, sample, or summarise without losing the artifact-ID joins that make session reconstruction possible.</p>
+            </div>
+            <div class="c">
+              <span class="ord">▸ Open · 03</span>
+              <h4>Research depth vs. <em>implementation breadth</em></h4>
+              <p>The project carries both a research and an engineering burden. Balancing literature work, architectural design, infrastructure deployment, and documentation requires explicit prioritisation as the system grows.</p>
+            </div>
+            <div class="c">
+              <span class="ord">▸ Open · 04</span>
+              <h4>Staged-activation policy <em>tuning</em></h4>
+              <p>The architecture commits to progressive revelation but the activation policy itself — what attacker signal triggers L2 exposure, what triggers L3 — is a tuneable surface that the experimental phase will explore as an independent variable.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- §3.7 Trajectory -->
+      <section class="block no-rule" id="trajectory">
+        <div class="gutter">§ 3.7 — Trajectory</div>
+        <div class="content">
+          <div class="sec-head"><span class="sec-num">§3.7</span><span class="sec-eyebrow">Forward Trajectory</span></div>
+          <h2 class="sec-title">Where the implementation goes from here.</h2>
+          <p class="sec-lede">The next phase moves the project from a stable substrate into instrumented experimentation. Each step below is scoped against §2.1 Principles and §2.5 Anti-Patterns; each produces telemetry that feeds §2.7's metrics.</p>
+
+          <div class="trajectory">
+            <div class="step">
+              <div class="o">Step · 01</div>
               <div>
-                <p class="text-sm font-black uppercase tracking-[0.24em] text-[#8f4f2f]">Contribution Positioning</p>
-                <h2 class="display mt-3 text-4xl leading-tight lg:text-6xl">What This Update Establishes</h2>
+                <h4>T-Pot deployment &amp; <em>sensor validation</em></h4>
+                <p>Stand up the T-Pot VM in Proxmox, validate sensor functionality, configure logging and dashboards into the normalised schema, profile resource utilisation, and confirm Layer-1 telemetry surfaces in the central logging pipeline.</p>
+                <div class="deps">Depends on · §3.1 substrate ✓ &nbsp;·&nbsp; §2.6 schema ✓</div>
               </div>
-              <div class="space-y-4">
-                <article class="accordion open soft-card rounded-3xl p-6">
-                  <button class="accordion-toggle flex w-full items-center justify-between gap-4 text-left">
-                    <span class="text-xl font-black">A clear research gap</span>
-                    <i class="fa-solid fa-chevron-down"></i>
-                  </button>
-                  <p class="accordion-detail mt-4 leading-7 text-slate-600">The literature review identifies the lack of controlled, integrated evaluation for layered deception across multi-stage attacker behaviour.</p>
-                </article>
-                <article class="accordion soft-card rounded-3xl p-6">
-                  <button class="accordion-toggle flex w-full items-center justify-between gap-4 text-left">
-                    <span class="text-xl font-black">A justified system architecture</span>
-                    <i class="fa-solid fa-chevron-down"></i>
-                  </button>
-                  <p class="accordion-detail mt-4 leading-7 text-slate-600">The proposed three-layer design directly responds to the need for environmental continuity and post-compromise observation.</p>
-                </article>
-                <article class="accordion soft-card rounded-3xl p-6">
-                  <button class="accordion-toggle flex w-full items-center justify-between gap-4 text-left">
-                    <span class="text-xl font-black">A measurement direction</span>
-                    <i class="fa-solid fa-chevron-down"></i>
-                  </button>
-                  <p class="accordion-detail mt-4 leading-7 text-slate-600">The project shifts evaluation from alert generation toward behavioural evidence: how attackers navigate, what lures they follow, and how deeply they engage.</p>
-                </article>
+            </div>
+            <div class="step">
+              <div class="o">Step · 02</div>
+              <div>
+                <h4>Multi-layer <em>deception workflow</em></h4>
+                <p>Implement deeper interactions between layers: trigger-based deception escalation, attacker-interaction tracking that survives layer transitions, and centralised monitoring logic that ties artifact IDs across L1 → L2 → L3 sessions.</p>
+                <div class="deps">Depends on · L1 sensor live &nbsp;·&nbsp; L2 GOAD scaffolding</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="o">Step · 03</div>
+              <div>
+                <h4>Artifact registry &amp; <em>monitoring expansion</em></h4>
+                <p>Expand the artifact registry to track deployed services, decoy credentials, interaction events, deception assets, and attacker-activity observations as queryable rows — the substrate for downstream analysis and reporting.</p>
+                <div class="deps">Depends on · normalised schema in production</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="o">Step · 04</div>
+              <div>
+                <h4>Evaluation methodology <em>consolidation</em></h4>
+                <p>Operationalise §2.7 across multiple runs: deployment reproducibility, deception realism, operational stability, monitoring effectiveness, and attacker-interaction visibility — the metrics that will support the final report and demonstration.</p>
+                <div class="deps">Depends on · sufficient session telemetry to baseline</div>
               </div>
             </div>
           </div>
 
-          <footer class="py-8 text-center text-sm text-slate-500">
-            Progress Update 1 - Deception-in-Depth Honeynet Architecture
-          </footer>
+          <div class="colophon">
+            <div class="left">
+              The contribution is not <em>another honeypot</em>.<br/>
+              It is a layered environment that lets defenders<br/>
+              <em>watch the story attackers tell themselves</em>.
+            </div>
+            <div class="right">
+              <span>Capstone · COMP7705</span>
+              HKU MSc<br/>
+              Progress Update Cycle<br/>
+              Deception-in-Depth Honeynet<br/><br/>
+              Set in <span style="font-family:var(--serif);font-style:italic;text-transform:none;letter-spacing:0">Newsreader</span>, IBM&nbsp;Plex&nbsp;Sans, and JetBrains&nbsp;Mono.
+            </div>
+          </div>
         </div>
       </section>
-    </main>
-  </div>
 
-  <script>
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: "base",
-      themeVariables: {
-        primaryColor: "#13211f",
-        primaryTextColor: "#fffaf0",
-        primaryBorderColor: "#13211f",
-        secondaryColor: "#526b5a",
-        secondaryTextColor: "#fffaf0",
-        tertiaryColor: "#8f4f2f",
-        lineColor: "#526b5a",
-        edgeLabelBackground: "#fbf7ec",
-        fontFamily: "Source Sans 3"
-      },
-      flowchart: {
-        htmlLabels: true,
-        curve: "basis"
-      }
-    });
+    </div>
+  </main>
+</div>
 
-    const menuToggle = document.getElementById("menuToggle");
-    const mobileMenu = document.getElementById("mobileMenu");
-    const navLinks = document.querySelectorAll(".nav-link");
-    const sections = document.querySelectorAll("section[id]");
+<script>
+const mt = document.getElementById('mtoggle');
+const mm = document.getElementById('mmenu');
+if(mt){
+  mt.addEventListener('click', () => mm.classList.toggle('open'));
+  mm.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mm.classList.remove('open')));
+}
 
-    menuToggle.addEventListener("click", () => {
-      mobileMenu.classList.toggle("open");
-    });
+const sections = document.querySelectorAll('section.block[id]');
+const tocLinks = document.querySelectorAll('aside.toc .toc-list a');
+function setActive(){
+  if(!sections.length) return;
+  let cur = sections[0].id;
+  const y = window.scrollY + 140;
+  sections.forEach(s => { if(s.offsetTop <= y) cur = s.id; });
+  tocLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
+}
+window.addEventListener('scroll', setActive, {passive:true});
+setActive();
 
-    navLinks.forEach((link) => {
-      link.addEventListener("click", () => mobileMenu.classList.remove("open"));
-    });
-
-    window.addEventListener("scroll", () => {
-      let current = "overview";
-      sections.forEach((section) => {
-        if (window.scrollY >= section.offsetTop - 180) {
-          current = section.id;
-        }
-      });
-
-      navLinks.forEach((link) => {
-        link.classList.toggle("active", link.getAttribute("href") === "#" + current);
-      });
-    });
-
-    document.querySelectorAll(".architecture-tab").forEach((tab) => {
-      tab.addEventListener("click", () => {
-        const layer = tab.dataset.layer;
-        document.querySelectorAll(".architecture-tab").forEach((item) => item.classList.remove("active"));
-        document.querySelectorAll(".architecture-panel").forEach((panel) => panel.classList.remove("active"));
-        tab.classList.add("active");
-        document.querySelector(`[data-panel="${layer}"]`).classList.add("active");
-      });
-    });
-
-    document.querySelectorAll(".accordion-toggle").forEach((button) => {
-      button.addEventListener("click", () => {
-        button.closest(".accordion").classList.toggle("open");
-      });
-    });
-  </script>
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target); }});
+}, {threshold: 0.08, rootMargin: '0px 0px -10% 0px'});
+document.querySelectorAll('section.block, .part-divider').forEach(s => { s.classList.add('reveal'); obs.observe(s); });
+</script>
 </body>
 </html>
